@@ -1,0 +1,2442 @@
+---
+name: python-scraping-pro
+description: Buenas practicas para programar en Python, hacer web scraping (httpx, requests, BeautifulSoup, selectolax, Scrapy, Playwright) y elegir/usar librerias. Usar SIEMPRE que el usuario pida escribir, revisar, depurar o explicar codigo Python, extraer datos de una web, automatizar un navegador, consumir una API, instalar o comparar librerias, o armar un proyecto Python, aunque no diga "scraping" ni "buenas practicas". Obliga a trabajar con un PLAN previo y a dar respuestas concretas, verificadas y nunca genericas.
+---
+
+======================================================================
+ SKILL: PYTHON + WEB SCRAPING + USO DE LIBRERIAS
+ Archivo unico de texto. Version 1.0 - 2026-10-20
+======================================================================
+
+Esta skill esta escrita para un asistente de IA (Claude u otro). Le dice
+COMO trabajar cuando el usuario le pide algo relacionado con Python,
+scraping o librerias. El contenido sale de leer los repositorios clonados
+(ver seccion 9, FUENTES) y de investigacion en internet. Los fragmentos
+copiados de esos repos llevan la fuente entre corchetes.
+
+Como leer este archivo:
+  - Secciones 1 y 2 son OBLIGATORIAS en cada respuesta (plan + calidad).
+  - Secciones 3, 4 y 5 son referencia: lee solo la que aplique a la tarea.
+  - Seccion 6 es la lista de verificacion antes de entregar.
+
+
+======================================================================
+ INDICE
+======================================================================
+
+  0. COMO USAR ESTA SKILL (activacion y orden de lectura)
+  1. REGLA DE ORO: SIEMPRE TRABAJAR CON UN PLAN
+       1.1 Por que siempre hay plan
+       1.2 Plantilla de plan
+       1.3 Plan corto vs plan completo
+       1.4 Ejemplo de plan para una tarea de scraping
+       1.5 Cuando cambiar el plan
+  2. RESPUESTAS NUNCA GENERICAS
+       2.1 Que es una respuesta generica (y por que esta prohibida)
+       2.2 Reglas para respuestas especificas
+       2.3 Ejemplo: respuesta generica vs respuesta correcta
+       2.4 Verificar antes de afirmar (no inventar APIs)
+       2.5 Formato de la respuesta
+  3. BUENAS PRACTICAS DE PROGRAMACION EN PYTHON
+       3.1 ZEN DE PYTHON (PEP 20)
+       3.2 ESTILO, PEP 8 Y FORMATEO AUTOMÁTICO
+       3.3 IMPORTS
+       3.4 NOMBRES
+       3.5 FUNCIONES
+       3.6 ERRORES Y EXCEPCIONES
+       3.7 GOTCHAS CLÁSICOS
+         3.7.1 Argumentos por defecto mutables
+         3.7.2 Late binding en closures
+         3.7.3 Otros
+       3.8 MODISMOS: COMPREHENSIONS, VALORES DE VERDAD, ESTADO GLOBAL
+       3.9 ESTRUCTURA DE PROYECTO
+       3.10 TYPE HINTS
+       3.11 DOCSTRINGS (FORMATO GOOGLE)
+       3.12 LOGGING EN VEZ DE PRINT
+       3.13 TESTS CON PYTEST
+       3.14 RECURSOS Y CONTEXT MANAGERS
+       3.15 PATHLIB PARA RUTAS
+       3.16 F-STRINGS Y CADENAS
+       3.17 DATACLASSES
+       3.18 CHECKLIST ANTES DE ENTREGAR CÓDIGO
+  4. COMO ELEGIR Y USAR LIBRERIAS
+       4.1 CÓMO ELEGIR UNA LIBRERÍA
+       4.2 GESTIÓN DE DEPENDENCIAS: VENV Y UV
+       4.3 CÓMO APRENDER UNA LIBRERÍA NUEVA (SIN INVENTAR APIs)
+       4.4 REQUESTS: SESSION, TIMEOUT, RAISE_FOR_STATUS, RETRY
+       4.5 HTTPX: CLIENT, TIMEOUT, LIMITS, ASYNC, HTTP/2, RETRIES, EXCEPCIONES
+       4.6 PARSING HTML/XML: CUÁL USAR Y CÓMO
+       4.7 DATOS TABULARES: PANDAS O POLARS
+       4.8 VALIDACIÓN CON PYDANTIC V2 (MODELO PARA ITEMS SCRAPEADOS)
+       4.9 REINTENTOS CON TENACITY
+       4.10 CLI CON ARGPARSE O TYPER
+       4.11 MAPA DE LIBRERÍAS POR CATEGORÍA
+  5. WEB SCRAPING CON PYTHON
+       5.1 ETICA Y LEGALIDAD (SIEMPRE ANTES DE ESCRIBIR CODIGO)
+       5.2 ARBOL DE DECISION: QUE HERRAMIENTA USAR
+       5.3 FLUJO DE TRABAJO RECOMENDADO
+       5.4 SELECTORES ROBUSTOS
+       5.5 CLIENTE HTTP CORTES: TIMEOUTS, SESION, RATE LIMIT, REINTENTOS
+       5.6 PAGINACION
+       5.7 CACHE LOCAL PARA DESARROLLO
+       5.8 SCRAPY: CRAWLING A ESCALA
+       5.9 PLAYWRIGHT: PAGINAS QUE REQUIEREN JAVASCRIPT
+       5.10 ALMACENAMIENTO
+       5.11 HERRAMIENTAS POR CATEGORIA
+       5.12 ERRORES COMUNES Y ANTI-PATRONES
+  6. CHECKLIST FINAL ANTES DE ENTREGAR
+  7. ANTI-PATRONES DEL ASISTENTE (lo que nunca hay que hacer)
+  8. PLANTILLAS LISTAS PARA COPIAR
+       8.1 Estructura de proyecto de scraping
+       8.2 Scraper base (HTML estatico, cortes, limite de velocidad)
+       8.3 Test del parser contra un fixture
+       8.4 Plantilla de respuesta del asistente
+  9. FUENTES (repositorios clonados y paginas consultadas)
+
+
+======================================================================
+ 0. COMO USAR ESTA SKILL
+======================================================================
+
+Activacion: aplica esta skill cuando la tarea toque cualquiera de estos
+temas, aunque el usuario no use estas palabras:
+  - escribir, revisar, refactorizar o depurar codigo Python
+  - "sacar datos de una pagina", "bajar precios", "leer una tabla web",
+    "automatizar el navegador", "consumir una API", "descargar archivos"
+  - "que libreria uso para...", "como instalo...", "no me funciona pip"
+  - armar un proyecto, un script, un bot, un CLI o tests en Python
+
+Orden de trabajo:
+  1. Lee la seccion 1 y arma el PLAN (siempre, sin excepcion).
+  2. Lee la seccion 2 y aplica sus reglas al redactar.
+  3. Abre solo la seccion de referencia que necesites (3, 4 o 5).
+  4. Antes de entregar, recorre la checklist de la seccion 6.
+
+Principio de fondo: el usuario quiere algo que FUNCIONE en SU caso. Cada
+regla de este archivo existe para que el codigo corra a la primera, se
+pueda mantener y no le genere problemas (bloqueos, datos corruptos,
+dependencias rotas, problemas legales).
+
+
+======================================================================
+ 1. REGLA DE ORO: SIEMPRE TRABAJAR CON UN PLAN
+======================================================================
+
+1.1 POR QUE SIEMPRE HAY PLAN
+----------------------------
+- Sin plan, el asistente escribe codigo antes de entender el problema y
+  termina reescribiendolo. Un plan de 5 lineas evita 50 lineas tiradas.
+- El plan hace visibles los supuestos ("asumo que la pagina no usa JS")
+  para que el usuario los corrija ANTES de que se escriba codigo.
+- En scraping el plan es todavia mas importante: el primer paso casi
+  nunca es "escribir el parser", es "averiguar de donde salen los datos"
+  (API, JSON embebido, HTML estatico o render con JS).
+- Regla: no se escribe ni una linea de codigo final sin haber escrito
+  primero el plan. Si la tarea es trivial, el plan es corto, pero existe.
+
+1.2 PLANTILLA DE PLAN
+---------------------
+Usa esta estructura (en el idioma del usuario):
+
+    PLAN
+    Objetivo: <que resultado concreto quiere el usuario, medible>
+    Contexto conocido: <SO, version de Python, libs instaladas, URL, etc.>
+    Supuestos: <lo que asumo y no se; cada uno verificable>
+    Pasos:
+      1. <accion concreta>  -> verificacion: <como se que salio bien>
+      2. <accion concreta>  -> verificacion: <...>
+      3. ...
+    Riesgos: <que puede fallar y que hago si falla>
+    Entregable: <archivo(s), comando para correrlo, salida esperada>
+
+Cada paso tiene que ser una ACCION ("inspeccionar la pestana Network
+buscando una llamada XHR que devuelva JSON") y no una intencion vaga
+("analizar la pagina").
+
+1.3 PLAN CORTO VS PLAN COMPLETO
+-------------------------------
+- Pregunta puntual (ej. "como hago un f-string con 2 decimales"):
+  plan mental de 1-2 lineas; no hace falta mostrarlo, pero la respuesta
+  igual debe ser concreta y probada.
+- Script o funcion (ej. "un script que baje el CSV y lo filtre"):
+  plan breve visible de 3-6 pasos antes del codigo.
+- Proyecto o scraping de un sitio (varios archivos, red, datos):
+  plan completo con la plantilla 1.2, y si hay supuestos criticos
+  (login, volumen, legalidad) confirmarlos con el usuario antes de
+  avanzar.
+
+1.4 EJEMPLO DE PLAN PARA UNA TAREA DE SCRAPING
+----------------------------------------------
+Pedido: "Quiero sacar nombre y precio de todos los productos de
+https://tienda.example.com/categoria/notebooks"
+
+    PLAN
+    Objetivo: CSV con columnas nombre, precio (float), url, de todas las
+              paginas de la categoria notebooks.
+    Contexto: Windows, Python 3.11 (confirmar con `python --version`).
+    Supuestos: (a) los productos son publicos, sin login;
+               (b) hay paginacion por ?page=N; (c) puede haber API JSON.
+    Pasos:
+      1. Leer https://tienda.example.com/robots.txt y los terminos
+         -> verificacion: la ruta /categoria/ no esta en Disallow.
+      2. Abrir DevTools > Network > Fetch/XHR y recargar
+         -> si hay JSON con los productos, usar ese endpoint (salta a 5).
+      3. Si no hay JSON: ver "Ver codigo fuente" (Ctrl+U); si los
+         precios estan en el HTML, usar httpx + selectolax; si no estan,
+         Playwright.
+      4. Guardar 1 pagina en tests/fixtures/pagina1.html y escribir
+         parse_listado(html) -> list[Producto] con test en pytest.
+      5. Agregar paginacion, timeout=10s, 1 req/seg, reintentos con
+         backoff ante 429/5xx -> verificacion: log de cada pagina.
+      6. Validar con pydantic (precio > 0, url absoluta), deduplicar
+         por url y escribir productos.csv.
+    Riesgos: cambio del HTML (tests con fixture lo detectan), bloqueo
+             por exceso de requests (bajar velocidad, no evadir).
+    Entregable: scraper.py + tests/test_parser.py; correr con
+                `uv run python scraper.py --out productos.csv`.
+
+1.5 CUANDO CAMBIAR EL PLAN
+--------------------------
+- Si un paso falla o descubres algo que invalida un supuesto (ej. "los
+  datos vienen de una API GraphQL"), DETENTE, actualiza el plan y dilo
+  explicitamente: "Cambio de plan: ... porque ...".
+- No sigas con el plan viejo por inercia ni ocultes el cambio.
+
+
+======================================================================
+ 2. RESPUESTAS NUNCA GENERICAS
+======================================================================
+
+2.1 QUE ES UNA RESPUESTA GENERICA (Y POR QUE ESTA PROHIBIDA)
+------------------------------------------------------------
+Una respuesta es generica cuando podria copiarse tal cual a otra
+pregunta distinta y seguiria "sirviendo". Senales:
+  - "Depende de tu caso", "hay muchas opciones", sin elegir ninguna.
+  - Listas de librerias sin decir cual usar ni por que.
+  - Codigo con `url = "https://example.com"` y `soup.find("div")` sin
+    relacion con la pagina real del usuario.
+  - Consejos de manual: "usa buenas practicas", "maneja los errores",
+    "optimiza tu codigo", sin decir COMO en este codigo.
+  - Pasos que el usuario no puede ejecutar ("configura el entorno").
+Esta prohibida porque le pasa el trabajo de vuelta al usuario: tiene que
+adivinar como aplicar el consejo a su caso, que era justo lo que pedia.
+
+2.2 REGLAS PARA RESPUESTAS ESPECIFICAS
+--------------------------------------
+ 1. Usa los datos reales del usuario: su URL, sus nombres de columnas,
+    su mensaje de error, su version de Python, su sistema operativo.
+    Si faltan datos criticos, pregunta UNA vez de forma precisa
+    ("pegame el traceback completo" / "que te imprime python --version")
+    o declara el supuesto y sigue.
+ 2. Elige. Si hay alternativas, recomienda UNA y di por que en una
+    frase; menciona la alternativa solo si cambia la decision
+    ("si la pagina usa JS, entonces Playwright").
+ 3. Codigo completo y ejecutable: imports, funcion main, guard
+    `if __name__ == "__main__":`, sin "..." donde va logica real.
+ 4. Comando exacto para instalar y correr (`uv add httpx selectolax`,
+    `uv run python scraper.py`). En Windows, comandos que funcionen en
+    PowerShell.
+ 5. Muestra la salida esperada (2-3 lineas de ejemplo) para que el
+    usuario sepa si funciono.
+ 6. Explica el porque de las decisiones no obvias, en una linea, al
+    lado del codigo (timeout, delay, selector elegido).
+ 7. Nombra los errores probables y su solucion concreta (ej. "si ves
+    httpx.ConnectTimeout, la red bloquea el sitio; proba con ...").
+ 8. Nada de relleno: sin introducciones del tipo "Gran pregunta!", sin
+    resumen repetido al final.
+
+2.3 EJEMPLO: RESPUESTA GENERICA VS RESPUESTA CORRECTA
+-----------------------------------------------------
+Pregunta: "como saco los titulos de las noticias de mi diario favorito?"
+
+MAL (generica):
+    "Puedes usar librerias como BeautifulSoup, Scrapy o Selenium. Primero
+     haces una peticion con requests, luego parseas el HTML y extraes
+     los titulos. Recuerda respetar el robots.txt."
+
+BIEN (especifica):
+    "Necesito la URL exacta para darte el selector correcto. Mientras
+     tanto, este es el script base; reemplaza SELECTOR por lo que veas
+     en DevTools (clic derecho en un titulo > Inspeccionar):
+
+        import httpx
+        from selectolax.lexbor import LexborHTMLParser
+
+        URL = "https://www.diario.example/ultimas"
+        SELECTOR = "h2.article-title a"   # <- ajustar con DevTools
+
+        def main() -> None:
+            headers = {"User-Agent": "titulares-bot/1.0 (tu@email.com)"}
+            r = httpx.get(URL, headers=headers, timeout=10,
+                          follow_redirects=True)
+            r.raise_for_status()
+            for a in LexborHTMLParser(r.text).css(SELECTOR):
+                print(a.text(strip=True), "->", a.attributes.get("href"))
+
+        if __name__ == "__main__":
+            main()
+
+     Instalar y correr:  uv add httpx selectolax ; uv run python titulos.py
+     Si imprime 0 titulos: los titulos se cargan con JavaScript; abre
+     Network > Fetch/XHR, busca el JSON y te paso la version con esa API."
+
+2.4 VERIFICAR ANTES DE AFIRMAR (NO INVENTAR APIS)
+-------------------------------------------------
+- Nunca inventes funciones, parametros o flags. Si no estas seguro de
+  que `httpx.Client(retries=3)` exista: NO existe; lo correcto es
+  `httpx.HTTPTransport(retries=3)`. Ante la duda, verifica:
+      python -c "import httpx, inspect; print(inspect.signature(httpx.HTTPTransport))"
+      python -c "import httpx; print(httpx.__version__)"
+      python -m pydoc httpx.Client
+- Si tienes herramientas (terminal, web), CORRE el codigo o consulta la
+  doc oficial de la version instalada antes de entregar.
+- Si no puedes verificar, dilo: "no lo probe; verifica X".
+- Las librerias cambian entre versiones (pydantic v1 -> v2, Scrapy 2.x,
+  BeautifulSoup 4). Indica para que version es el codigo.
+
+2.5 FORMATO DE LA RESPUESTA
+---------------------------
+Orden recomendado:
+  1. Plan (corto o completo segun 1.3).
+  2. Codigo completo, en un bloque por archivo, con el nombre del archivo.
+  3. Comandos para instalar y ejecutar.
+  4. Salida esperada.
+  5. Problemas probables y como resolverlos (2-4 puntos).
+Responde en el idioma del usuario. Comentarios del codigo cortos y en
+el mismo idioma, solo donde la logica no sea obvia.
+
+
+======================================================================
+ 3. BUENAS PRÁCTICAS DE PROGRAMACIÓN EN PYTHON
+======================================================================
+
+Reglas accionables con su porqué y ejemplos MALO/BUENO. Fuentes: Google Python
+Style Guide (pyguide.md), The Hitchhiker's Guide to Python
+(python-guide/docs/writing/*.rst) y clean-code-python (README.md).
+
+3.1 ZEN DE PYTHON (PEP 20)
+
+Criterio de desempate cuando hay varias soluciones posibles. Salida textual de
+`python -c "import this"`:
+
+    The Zen of Python, by Tim Peters
+
+    Beautiful is better than ugly.
+    Explicit is better than implicit.
+    Simple is better than complex.
+    Complex is better than complicated.
+    Flat is better than nested.
+    Sparse is better than dense.
+    Readability counts.
+    Special cases aren't special enough to break the rules.
+    Although practicality beats purity.
+    Errors should never pass silently.
+    Unless explicitly silenced.
+    In the face of ambiguity, refuse the temptation to guess.
+    There should be one-- and preferably only one --obvious way to do it.
+    Although that way may not be obvious at first unless you're Dutch.
+    Now is better than never.
+    Although never is often better than *right* now.
+    If the implementation is hard to explain, it's a bad idea.
+    If the implementation is easy to explain, it may be a good idea.
+    Namespaces are one honking great idea -- let's do more of those!
+
+Traducción a reglas:
+- "Explicit": nada de magia con locals(), import * ni *args sin necesidad.
+- "Flat": retornos tempranos (guard clauses) en vez de if anidados.
+- "Errors should never pass silently": prohibido except vacío o con pass.
+- Ejemplo [Fuente: python-guide style.rst, "Explicit code"]: MALO
+  `def make_complex(*args): x, y = args; return dict(**locals())`;
+  BUENO `def make_complex(x, y): return {'x': x, 'y': y}`.
+
+3.2 ESTILO, PEP 8 Y FORMATEO AUTOMÁTICO
+
+Reglas:
+- Seguir PEP 8 y delegar el formato a una herramienta, no discutirlo a mano.
+  Recomendado: ruff (lint + formato). Alternativa de formato: black, que da un
+  formato "opinionated and deterministic" con diffs mínimos [Fuente:
+  python-guide style.rst, "Auto-Formatting"].
+- 4 espacios de indentación, nunca tabs. Una sentencia por línea: nada de `;`
+  ni `if x: hacer()` en la misma línea.
+- No usar backslash para continuar líneas; usar paréntesis implícitos
+  [Fuente: pyguide.md §3.2].
+- Fijar la longitud de línea en pyproject.toml (Google usa 80; ruff/black 88).
+- Silenciar avisos del linter solo en la línea concreta y con motivo
+  [Fuente: pyguide.md §2.1.4].
+- Condiciones complejas: asignarlas a variables con nombre antes del `if`
+  [Fuente: python-guide style.rst, "One statement per line"].
+
+    # pyproject.toml  (B = bugbear: detecta defaults mutables, except desnudo)
+    [tool.ruff]
+    line-length = 88
+    [tool.ruff.lint]
+    select = ["E", "F", "W", "I", "B", "UP", "SIM", "N"]
+
+    ruff check . --fix     # lint con autocorrección
+    ruff format .          # formatear (compatible con black)
+
+3.3 IMPORTS
+
+Reglas [Fuente: pyguide.md §2.2.4 y §3.13]:
+- Un import por línea (se permiten varios nombres de typing/collections.abc).
+- Siempre arriba, tras el docstring del módulo, en grupos separados por una
+  línea en blanco: __future__, biblioteca estándar, terceros, propios. ruff
+  (regla "I") los ordena solo.
+- Nunca `from modulo import *`: no se sabe de dónde sale cada nombre.
+- Imports absolutos con el nombre completo del paquete, no relativos: "This
+  helps prevent unintentionally importing a package twice".
+- `import x as y` solo para abreviaturas estándar (np, pd) o colisiones.
+
+    # MALO
+    import os, sys
+    from modu import *
+    x = sqrt(4)  # ¿de modu? ¿builtin? [Fuente: python-guide structure.rst]
+    # BUENO
+    from __future__ import annotations
+
+    import os
+    import sys
+    from collections.abc import Mapping, Sequence
+
+    import httpx
+
+    from mi_paquete import parser
+
+3.4 NOMBRES
+
+Convenciones [Fuente: pyguide.md §3.16]: `module_name`, `package_name`,
+`ClassName`, `ExceptionNameError`, `function_name`, `local_var_name`,
+`GLOBAL_CONSTANT_NAME`; prefijo `_` para uso interno.
+
+Reglas:
+- Descriptivos y pronunciables; longitud proporcional al alcance: `i` vale
+  en un bucle de 5 líneas, no en una función de 40.
+- No abreviar (`usr_cnt` -> `user_count`) ni meter el tipo (`id_to_name_dict`).
+- Sin guiones en archivos/paquetes (no se pueden importar).
+- Acrónimos en mayúsculas dentro de CapWords: `HTTPServerError`.
+- Preferir `_privado` a `__privado` (name mangling complica tests).
+- Las funciones dicen lo que hacen: `message.send()`, no `message.handle()`
+  [Fuente: clean-code-python, "Function names should say what they do"].
+- Nada de números mágicos: nombrarlos como constante.
+
+    time.sleep(86400)                 # MALO: ¿qué era 86400?
+    SECONDS_IN_A_DAY = 60 * 60 * 24   # BUENO [Fuente: clean-code-python,
+    time.sleep(SECONDS_IN_A_DAY)      #        "Use searchable names"]
+
+3.5 FUNCIONES
+
+Reglas:
+- Una función hace UNA cosa, a un único nivel de abstracción. Si para
+  describirla hace falta un "y", partirla. clean-code-python: "This is by far
+  the most important rule in software engineering".
+- Pequeñas: "If a function exceeds about 40 lines, think about whether it can
+  be broken up" [Fuente: pyguide.md §3.18].
+- Pocos argumentos: idealmente 2, máximo 3-4. Si hacen falta más, agruparlos
+  en un dataclass (ver 3.17) [Fuente: clean-code-python, "Function arguments
+  (2 or fewer ideally)"].
+- Los opcionales, solo por nombre: forzarlo con `*` en la firma.
+- Sin flags booleanos que cambian el comportamiento: indican dos funciones.
+- Sin efectos secundarios ocultos (mutar globales o argumentos). Si muta un
+  argumento, decirlo en el docstring.
+- Retorno temprano para los casos de error; un único punto de salida para el
+  resultado normal [Fuente: python-guide style.rst, "Returning values"].
+- *args/**kwargs solo con necesidad demostrada: `send(message, recipients)`.
+
+    # MALO  [Fuente: clean-code-python, "Functions should do one thing"]
+    def email_clients(clients: list[Client]) -> None:
+        for client in clients:
+            if client.active:
+                email(client)
+    # BUENO
+    def get_active_clients(clients: list[Client]) -> list[Client]:
+        return [client for client in clients if client.active]
+
+    def email_clients(clients: list[Client]) -> None:
+        for client in get_active_clients(clients):
+            email(client)
+
+    # MALO  [Fuente: clean-code-python, "Don't use flags as function params"]
+    def create_file(name: str, temp: bool) -> None:
+        if temp:
+            (Path(gettempdir()) / name).touch()
+        else:
+            Path(name).touch()
+    # BUENO
+    def create_file(name: str) -> None:
+        Path(name).touch()
+
+    def create_temp_file(name: str) -> None:
+        (Path(gettempdir()) / name).touch()
+
+    # keyword-only: fetch(url, 5, 2) da TypeError; fetch(url, timeout=5) OK
+    def fetch(url: str, *, timeout: float = 10.0, retries: int = 3) -> bytes:
+        ...
+
+3.6 ERRORES Y EXCEPCIONES
+
+Reglas [Fuente: pyguide.md §2.4.4]:
+- NUNCA `except:` desnudo, ni capturar `Exception`, salvo para relanzar o en
+  un punto de aislamiento deliberado (bucle externo de un worker) que
+  registra con logger.exception. Motivo: "except: will really catch
+  everything including misspelled names, sys.exit() calls, Ctrl+C
+  interrupts, unittest failures". Capturar siempre la más específica.
+- `try` mínimo: solo la línea que puede fallar; cuanto más grande, más
+  errores reales oculta. Lo que sigue al éxito va fuera o en `else`.
+- Limpieza con `finally` o, mejor, con `with` (ver 3.14).
+- Usar built-ins cuando encajen: ValueError, TypeError, KeyError...
+- Excepciones propias: heredar de una existente, terminar en `Error`, sin
+  repetir el módulo (`foo.FooError` es redundante). Una base por paquete.
+- Al traducir una excepción, `raise NuevaError(...) from err` (conserva causa).
+- NO usar `assert` para validar entradas ni lógica: con `python -O` se
+  eliminan. Prueba de Google: "the assert could be removed without breaking
+  the code". En tests de pytest, assert sí es lo correcto.
+- Mensajes precisos, con los valores interpolados identificables y fáciles
+  de buscar con grep [Fuente: pyguide.md §3.10.2].
+
+    # MALO
+    try:
+        data = json.loads(raw)
+        save(data["user"])
+    except:
+        pass
+    # BUENO
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as err:
+        raise InvalidPayloadError(f"JSON inválido: {raw[:80]!r}") from err
+    save(data["user"])
+
+    # MALO  [Fuente: pyguide.md §2.4.4]
+    def connect_to_next_port(self, minimum: int) -> int:
+        assert minimum >= 1024, 'Minimum port must be at least 1024.'
+        port = self._find_next_open_port(minimum)
+        assert port is not None
+        return port
+    # BUENO
+    def connect_to_next_port(self, minimum: int) -> int:
+        if minimum < 1024:
+            raise ValueError(f'Min. port must be at least 1024, not {minimum}.')
+        port = self._find_next_open_port(minimum)
+        if port is None:
+            raise ConnectionError(
+                f'Could not connect to service on port {minimum} or higher.')
+        return port
+
+    # Único caso legítimo de `except Exception`: punto de aislamiento
+    for job in jobs:
+        try:
+            process(job)
+        except Exception:
+            logger.exception("Falló el job %s; se sigue", job.id)
+
+3.7 GOTCHAS CLÁSICOS
+
+3.7.1 Argumentos por defecto mutables
+
+Los valores por defecto se evalúan UNA vez, al definir la función, no en cada
+llamada: una lista/dict/set por defecto se comparte entre todas las llamadas
+[Fuente: python-guide gotchas.rst, "Mutable Default Arguments"].
+
+    # MALO
+    def append_to(element, to=[]):
+        to.append(element)
+        return to
+
+    my_list = append_to(12)
+    print(my_list)          # [12]
+    my_other_list = append_to(42)
+    print(my_other_list)    # [12, 42]   <- misma lista
+    # BUENO: None como centinela
+    def append_to(element, to=None):
+        if to is None:
+            to = []
+        to.append(element)
+        return to
+
+Otros casos [Fuente: pyguide.md §2.12.4]:
+
+    def foo(a, b: Mapping = {}): ...    # MALO: mutable aunque diga Mapping
+    def foo(a, b=time.time()): ...      # MALO: se congela al importar
+    def foo(a, b: Sequence = ()): ...   # BUENO: la tupla es inmutable
+
+No usar `x = x or []`: confunde None con una lista vacía pasada a propósito;
+usar `if x is None` [Fuente: pyguide.md §2.14.4].
+
+3.7.2 Late binding en closures
+
+Las closures buscan el valor de la variable cuando se LLAMAN, no cuando se
+crean [Fuente: python-guide gotchas.rst, "Late Binding Closures"].
+
+    # MALO
+    def create_multipliers():
+        return [lambda x: i * x for i in range(5)]
+
+    for multiplier in create_multipliers():
+        print(multiplier(2))    # 8 8 8 8 8, no 0 2 4 6 8
+
+No es culpa de lambda: un `def` dentro del bucle se comporta igual. Afecta a
+cualquier callback creado en un bucle (handlers, tareas asyncio).
+    # BUENO (opción 1): ligar el valor con un argumento por defecto
+    def create_multipliers():
+        return [lambda x, i=i: i * x for i in range(5)]
+    # BUENO (opción 2, más legible): functools.partial
+    from functools import partial
+    from operator import mul
+
+    def create_multipliers():
+        return [partial(mul, i) for i in range(5)]
+
+3.7.3 Otros
+- `[[]] * 4` crea 4 referencias a la MISMA lista; usar
+  `[[] for _ in range(4)]` [Fuente: python-guide style.rst].
+- No versionar `__pycache__/` ni `*.pyc`: ponerlos en .gitignore.
+
+3.8 MODISMOS: COMPREHENSIONS, VALORES DE VERDAD, ESTADO GLOBAL
+
+Comprehensions [Fuente: pyguide.md §2.7.4]: un solo `for` y como mucho un
+filtro; "Optimize for readability, not conciseness". Si solo se itera una
+vez, usar expresión generadora.
+
+    # MALO
+    result = [(x, y) for x in range(10) for y in range(5) if x * y > 10]
+    # BUENO
+    result = []
+    for x in range(10):
+        for y in range(5):
+            if x * y > 10:
+                result.append((x, y))
+    total = sum(item.price for item in cart)   # generador, sin lista
+
+Valores de verdad [Fuente: pyguide.md §2.14.4]: falsedad implícita en
+secuencias; `is None` para None; nunca `== True/False`; con enteros comparar
+explícitamente (`if i % 10 == 0:`).
+
+    # MALO                        # BUENO
+    if len(users) == 0: ...       if not users: ...
+    if flag == True: ...          if flag: ...
+    if value == None: ...         if value is None: ...
+
+Estado global [Fuente: pyguide.md §2.5.4]: evitar estado global mutable y la
+palabra `global`. Las constantes de módulo sí, en MAYÚSCULAS
+(`_MAX_RETRIES = 3` interna, `DEFAULT_TIMEOUT = 10` pública). El estado se
+pasa como argumento o se encapsula en una clase.
+
+Idiomas [Fuente: python-guide style.rst]: `enumerate(items)` en vez de
+`range(len(items))`; unpacking `first, *rest = values`; `_` para valores
+ignorados; `key in dict/set` para búsquedas O(1).
+
+3.9 ESTRUCTURA DE PROYECTO
+
+Reglas:
+- Layout `src/`: impide que los tests importen el código del directorio
+  actual en vez del paquete instalado.
+- Toda la configuración (metadatos, dependencias, ruff, pytest, mypy) en un
+  único `pyproject.toml`; no crear setup.py/setup.cfg/requirements.txt nuevos.
+- Tests fuera del paquete, en `tests/` (incluirlos dentro "often increases
+  complexity for your users" [Fuente: python-guide structure.rst]).
+- Módulos cortos, en minúsculas, sin guiones; agrupar con subpaquetes, no con
+  prefijos: `import library.plugin.foo` sí, `import library.foo_plugin` no
+  [Fuente: python-guide structure.rst].
+- Evitar anidamiento redundante (`proyecto/proyecto/proyecto/`).
+
+    mi-proyecto/
+        pyproject.toml   README.md   .gitignore   uv.lock
+        src/mi_paquete/
+            __init__.py
+            __main__.py      # permite `python -m mi_paquete`
+            cli.py           # main(): parseo de args + config de logging
+            core.py
+        tests/
+            conftest.py
+            test_core.py
+
+Entornos virtuales: uno por proyecto, nunca instalar en el Python del
+sistema. Herramienta recomendada: uv (Python, venv, dependencias y lockfile).
+En aplicaciones, versionar `uv.lock`.
+
+    uv init mi-proyecto --package   # crea layout src/ y pyproject.toml
+    uv add httpx                    # añade dependencia y actualiza uv.lock
+    uv add --dev pytest ruff        # dependencias de desarrollo
+    uv run pytest                   # ejecuta en el venv sin activarlo
+    uv sync                         # reproduce el entorno desde el lockfile
+    # Sin uv: python -m venv .venv && pip install -e .
+
+Guard de __main__ [Fuente: pyguide.md §3.17]: la lógica de un ejecutable va
+en `main()`, llamada bajo `if __name__ == '__main__':`, para que el módulo se
+pueda importar (tests, pydoc) sin ejecutar nada. En el nivel superior solo
+imports, constantes, clases y funciones: "All code at the top level will be
+executed when the module is imported".
+
+    # MALO
+    process(load(sys.argv[1]))    # corre al importar
+    # BUENO
+    def main(argv: list[str] | None = None) -> int:
+        args = parse_args(argv)
+        process(load(args.path))
+        return 0
+
+    if __name__ == "__main__":
+        sys.exit(main())
+
+3.10 TYPE HINTS
+
+Reglas [Fuente: pyguide.md §2.21 y §3.19]:
+- Anotar como mínimo toda la API pública y el código complejo o propenso a
+  errores de tipo. Verificar con mypy o pyright en CI.
+- Sintaxis moderna: `list[str]`, `dict[str, int]`, `X | None`; no
+  `typing.List/Optional/Union` en código nuevo.
+- Si un argumento puede ser None, declararlo: `a: str | None = None`. El
+  Optional implícito (`a: str = None`) está prohibido (§3.19.5).
+- Espacios alrededor de `=` solo con anotación y default:
+  `def func(a: int = 0) -> int` (§3.19.4).
+- No anotar `self`/`cls` ni el retorno de `__init__`; para devolver la propia
+  clase, `typing.Self`.
+- Parámetros con tipos abstractos de collections.abc (Sequence, Mapping,
+  Iterable); retornos con tipos concretos.
+- `Any` como último recurso; `# type: ignore[codigo]` siempre con código.
+
+    # MALO
+    from typing import List, Optional
+    def find(users: List, name: str = None) -> Optional[dict]: ...
+    # BUENO
+    from collections.abc import Sequence
+    def find(users: Sequence[User], name: str | None = None) -> User | None: ...
+
+3.11 DOCSTRINGS (FORMATO GOOGLE)
+
+Reglas [Fuente: pyguide.md §3.8]:
+- Obligatorio en funciones públicas, no triviales o con lógica no obvia;
+  también en módulos (al inicio del archivo) y clases.
+- `"""` triple comilla doble. Primera línea: resumen de una frase acabada en
+  punto; luego línea en blanco y el detalle.
+- Describe QUÉ hace y cómo llamarla, no la implementación: "A docstring
+  should give enough information to write a call to the function without
+  reading the function's code". Lo interno va en comentarios.
+- Secciones `Args:`, `Returns:` (o `Yields:`), `Raises:`; omitibles si la
+  firma y el resumen ya lo dicen todo. No repetir tipos ya anotados.
+- Documentar si la función muta un argumento.
+- Estilo consistente en el archivo ("Fetches..." o "Fetch...").
+
+    def fetch_smalltable_rows(
+        table_handle: smalltable.Table,
+        keys: Sequence[bytes | str],
+    ) -> Mapping[bytes, tuple[str, ...]]:
+        """Fetches rows from a Smalltable.
+
+        Args:
+            table_handle: An open smalltable.Table instance.
+            keys: A sequence of strings representing the key of each table
+                row to fetch.  String keys will be UTF-8 encoded.
+
+        Returns:
+            A dict mapping keys to the corresponding table row data
+            fetched. Each row is represented as a tuple of strings.
+
+        Raises:
+            IOError: An error occurred accessing the smalltable.
+        """
+
+[Fuente: pyguide.md §3.8.3, recortado]
+
+3.12 LOGGING EN VEZ DE PRINT
+
+Reglas:
+- `print` solo para la salida que el usuario de una CLI debe ver. Todo
+  diagnóstico va por `logging`: el log record trae archivo, función y línea,
+  y se puede filtrar o silenciar por nivel [Fuente: python-guide logging.rst].
+- Un logger por módulo: `logger = logging.getLogger(__name__)`. Crea la
+  jerarquía por puntos y evita colisiones.
+- En una LIBRERÍA no configurar logging (nada de basicConfig, handlers ni
+  setLevel); como mucho un NullHandler en `__init__.py`: "It is strongly
+  advised that you do not add any handlers other than NullHandler to your
+  library's loggers" [Fuente: python-guide logging.rst].
+- Configurar UNA vez, en el punto de entrada de la aplicación (main), con
+  basicConfig o dictConfig.
+- Argumentos con %-placeholders, no f-strings: solo se formatea si se emite y
+  las herramientas agrupan por patrón [Fuente: pyguide.md §3.10.1].
+- Dentro de un except, `logger.exception(...)` incluye el traceback.
+
+    # MALO
+    print("Descargando", url)
+    logging.info(f"Status {resp.status_code}")   # f-string y logger raíz
+    logging.basicConfig(level=logging.DEBUG)     # dentro de una librería
+    # BUENO: mi_paquete/core.py
+    logger = logging.getLogger(__name__)
+
+    def download(url: str) -> bytes:
+        logger.info("Descargando %s", url)
+        try:
+            return _get(url)
+        except TimeoutError:
+            logger.exception("Timeout al descargar %s", url)
+            raise
+    # BUENO: mi_paquete/__init__.py
+    logging.getLogger(__name__).addHandler(logging.NullHandler())
+    # BUENO: solo en el punto de entrada (cli.py, dentro de main())
+    logging.basicConfig(level=logging.INFO,
+        format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s")
+
+3.13 TESTS CON PYTEST
+
+Reglas [Fuente: python-guide tests.rst]:
+- pytest: funciones simples con `assert` normal, sin boilerplate de clases.
+- "A testing unit should focus on one tiny bit of functionality and prove it
+  correct." Cada test es independiente: pasa solo y en cualquier orden.
+- Rápidos (milisegundos); los lentos (red, BD real) se marcan y van aparte.
+- Nombres largos y descriptivos (`test_square_negative_number`): es lo que se
+  ve cuando falla.
+- Ante un bug, primero el test que lo reproduce; suite completa antes de push.
+- Sin red en tests unitarios: fixtures, monkeypatch o HTML de ejemplo en
+  `tests/fixtures/`. Archivos temporales con `tmp_path`, nunca rutas fijas.
+
+    import pytest
+    from mi_paquete.pricing import apply_discount
+
+    def test_apply_discount_reduces_price():
+        assert apply_discount(100.0, 0.2) == pytest.approx(80.0)
+
+    @pytest.mark.parametrize("rate", [-0.1, 1.5])
+    def test_apply_discount_rejects_invalid_rate(rate):
+        with pytest.raises(ValueError, match="rate"):
+            apply_discount(100.0, rate)
+
+    def test_parse_title_reads_h1(tmp_path):
+        page = tmp_path / "page.html"
+        page.write_text("<h1>Hola</h1>", encoding="utf-8")
+        assert parse_title(page) == "Hola"
+
+3.14 RECURSOS Y CONTEXT MANAGERS
+
+Reglas [Fuente: pyguide.md §3.11]:
+- Archivos, sockets, conexiones a BD, clientes HTTP y locks: siempre con
+  `with`. No confiar en el recolector de basura: "There are no guarantees as
+  to when the runtime will actually invoke the __del__ method".
+- Objetos con `.close()` pero sin `with`: `contextlib.closing()`.
+- Recursos propios: `@contextlib.contextmanager` con try/finally. Varios
+  recursos dinámicos: `contextlib.ExitStack`.
+- Abrir texto siempre con `encoding="utf-8"`: el default depende del sistema
+  operativo (en Windows suele ser cp1252).
+
+    # MALO
+    f = open("datos.txt")
+    data = f.read()          # si falla, el archivo queda abierto
+    f.close()
+    # BUENO
+    with open("datos.txt", encoding="utf-8") as f:
+        data = f.read()
+    with httpx.Client(timeout=10) as client:   # se cierra al salir
+        responses = [client.get(url) for url in urls]
+
+3.15 PATHLIB PARA RUTAS
+
+Reglas:
+- `pathlib.Path` en vez de concatenar strings u `os.path.join`; unir con `/`.
+- `read_text`/`write_text` para lecturas simples, `mkdir(parents=True,
+  exist_ok=True)` para crear directorios, `glob`/`rglob` para buscar.
+- Rutas relativas al código con `Path(__file__).resolve().parent`, no al
+  directorio actual.
+- En la API pública aceptar `str | os.PathLike` y convertir con `Path(p)`.
+
+    # MALO
+    out = os.path.join(os.getcwd(), "data") + "/" + name + ".csv"
+    if not os.path.exists(os.path.dirname(out)):
+        os.makedirs(os.path.dirname(out))
+    # BUENO
+    out = Path.cwd() / "data" / f"{name}.csv"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(csv_content, encoding="utf-8")
+    inputs = sorted((Path(__file__).resolve().parent / "inputs").glob("*.json"))
+
+3.16 F-STRINGS Y CADENAS
+
+Reglas [Fuente: pyguide.md §3.10]:
+- Formatear con f-strings; no construir texto con `+` y `str()`.
+- No acumular con `+=` en un bucle (puede ser cuadrático): lista +
+  `"".join(...)` o io.StringIO.
+- `f"{variable=}"` muestra nombre y valor; `!r` muestra el valor entre
+  comillas en mensajes de error (`f"Ruta inválida: {path!r}"`).
+- Excepción: en llamadas a logging, %-placeholders (ver 3.12).
+
+    # MALO
+    x = 'name: ' + name + '; score: ' + str(n)
+    for last_name, first_name in employee_list:
+        html += f'<tr><td>{last_name}, {first_name}</td></tr>'
+    # BUENO
+    x = f'name: {name}; score: {n}'
+    rows = [f'<tr><td>{a}, {b}</td></tr>' for a, b in employee_list]
+    html = ''.join(rows)
+
+3.17 DATACLASSES
+
+Reglas:
+- Para agrupar datos, `@dataclass` en vez de dicts sueltos, tuplas
+  posicionales o `__init__` a mano: `__init__`, `__repr__` y `__eq__` gratis,
+  autocompletado y chequeo de tipos.
+- `frozen=True` para objetos de valor inmutables; `slots=True` (3.10+) ahorra
+  memoria y detecta atributos mal escritos.
+- Defaults mutables con `field(default_factory=list)` (el decorador rechaza
+  `tags: list = []`).
+- Validación en `__post_init__` lanzando ValueError.
+- Sirve como objeto de parámetros cuando una función tiene demasiados
+  argumentos (ver 3.5). Para validar JSON externo, valorar pydantic.
+
+    # MALO
+    product = {"name": "Mate", "price": "1200", "tags": []}
+    total = product["prise"]          # KeyError en tiempo de ejecución
+    # BUENO
+    from dataclasses import dataclass, field
+
+    @dataclass(frozen=True, slots=True)
+    class Product:
+        name: str
+        price: float
+        tags: tuple[str, ...] = ()
+
+        def __post_init__(self) -> None:
+            if self.price < 0:
+                raise ValueError(f"Precio negativo: {self.price!r}")
+
+    @dataclass
+    class Cart:
+        items: list[Product] = field(default_factory=list)   # no `= []`
+
+3.18 CHECKLIST ANTES DE ENTREGAR CÓDIGO
+
+- ruff check/format limpios; sin `except:` desnudo ni assert como validación.
+- Sin defaults mutables ni closures en bucle que dependan de la variable.
+- Funciones de una responsabilidad, sin flags, <= ~40 líneas, <= 3-4 args.
+- API pública con type hints y docstring Google; logger por módulo.
+- `with` para recursos, pathlib, f-strings, dataclasses, guard de __main__.
+- Tests pytest independientes, rápidos y sin red.
+
+
+======================================================================
+ 4. CÓMO USAR LIBRERÍAS EN PYTHON
+======================================================================
+
+Cuando una tarea necesita código de terceros: elegir la librería, instalarla sin ensuciar
+el sistema, aprender su API sin inventarla y usar bien las comunes en scraping. Versiones
+comprobadas en PyPI en octubre de 2026; vuelve a comprobarlas antes de fijarlas.
+
+4.1 CÓMO ELEGIR UNA LIBRERÍA
+
+Regla 1: biblioteca estándar primero. Muchas tareas no necesitan dependencias:
+    - HTTP trivial: urllib.request. Datos: json, csv, sqlite3, tomllib (3.11+). CLI: argparse.
+    - Concurrencia: concurrent.futures, asyncio. HTML simple: html.parser. XML confiable:
+      xml.etree.ElementTree (no confiable: defusedxml). Otros: pathlib, logging, zoneinfo.
+
+Regla 2: si hace falta una librería externa, revisa estos criterios y menciónalos:
+    - Mantenimiento: fecha del último release, commits recientes, issues
+      atendidas. Si no hay release en 12-18 meses, investiga por qué.
+    - Licencia: MIT, BSD y Apache-2.0 son permisivas. GPL/AGPL, consultar antes.
+    - Python soportado (requires_python), tipos (py.typed o "Typing :: Typed"),
+      docs versionadas con changelog, adopción real y pocas dependencias
+      transitivas.
+
+Comprobación en PyPI sin navegador (API JSON pública):
+    python -c "import json,urllib.request as u; d=json.load(u.urlopen('https://pypi.org/pypi/httpx/json')); i=d['info']; print(i['version'], i.get('license_expression') or i['license'], i['requires_python'], [f['upload_time'] for f in d['urls']][:1])"
+
+Un caso real: el último release de httpx en PyPI es 0.28.1, del 6 de diciembre
+de 2024 (BSD-3-Clause, Python >=3.8). awesome-python ya lista "httpx2", un fork
+"maintained by Pydantic", que se importa como `import httpx2`. httpx 0.28.1
+sigue siendo estable y es lo que documenta esta sección. Aun así, en un proyecto
+nuevo de larga vida la elección debe ser consciente. requests está en 2.34.2
+(Apache-2.0, Python >=3.10).
+[Fuente: vinta/awesome-python README.md "HTTP Clients"; pypi.org/pypi/httpx/json; pypi.org/pypi/requests/json; github.com/pydantic/httpx2]
+
+4.2 GESTIÓN DE DEPENDENCIAS: VENV Y UV
+
+Nunca instales en el Python global (`pip install x` sin entorno activo, ni
+`sudo pip`). Si aparece el error "externally-managed-environment" (PEP 668),
+la solución es crear un entorno, no usar --break-system-packages. La
+python-guide recomienda obligar a pip a exigir un entorno virtual:
+    export PIP_REQUIRE_VIRTUALENV=true      # o en pip.conf: [global] require-virtualenv = true
+[Fuente: realpython/python-guide docs/dev/pip-virtualenv.rst]
+
+OPCIÓN RECOMENDADA: uv (pyproject.toml + lockfile). uv gestiona las versiones
+de Python, el entorno virtual, las dependencias y el lock. awesome-python lo
+lista en "Environment Management" y en "Package Management".
+
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"  # Windows
+    curl -LsSf https://astral.sh/uv/install.sh | sh                                   # macOS/Linux
+
+    uv init scraper                  # pyproject.toml, .python-version, README, main de ejemplo
+    cd scraper
+    uv python pin 3.12
+    uv add "httpx[http2]" selectolax pydantic tenacity typer
+    uv add "httpx>=0.28,<0.29"       # restricción explícita
+    uv add --dev pytest respx        # va a [dependency-groups] dev
+    uv remove typer
+    uv lock                          # crea/actualiza uv.lock
+    uv lock --check                  # falla si el lock no coincide con pyproject
+    uv lock --upgrade-package httpx  # sube solo httpx, el resto se queda igual
+    uv sync                          # deja .venv exactamente como el lock
+    uv run python main.py            # bloquea y sincroniza antes de ejecutar
+    uv run --locked pytest           # CI: error si el lock está desactualizado
+    uv tree                          # árbol de dependencias
+    uv export --format requirements.txt -o requirements.txt
+
+[Fuente: docs.astral.sh/uv concepts/projects/dependencies y concepts/projects/sync]
+
+pyproject.toml típico:
+
+    [project]
+    name = "scraper"
+    version = "0.1.0"
+    requires-python = ">=3.12"
+    dependencies = ["httpx[http2]>=0.28.1", "pydantic>=2.9", "selectolax>=1.0", "tenacity>=9.0"]
+    [dependency-groups]
+    dev = ["pytest>=8.1.1,<9", "respx>=0.21"]
+
+Para un script de un solo archivo (metadatos en línea, PEP 723):
+`uv add --script scrape.py httpx selectolax` y luego `uv run scrape.py`.
+
+PINNING Y LOCKFILES
+    - En pyproject.toml declara rangos: cota inferior y, en librerías 0.x,
+      también superior, porque de 0.x a 0.y puede romperse la API. Por ejemplo,
+      httpx 0.28.0 eliminó el argumento `proxies` [Fuente: encode/httpx CHANGELOG.md 0.28.0].
+    - uv.lock fija versiones exactas y hashes de todo el árbol. Súbelo al
+      repositorio junto con .python-version. No subas .venv.
+    - Una aplicación (un scraper) va con lock. Una librería que otros instalan no
+      fija versiones exactas. Para actualizar: upgrade-package, tests y commit del lock.
+
+ALTERNATIVA SIN UV:
+
+    python -m venv .venv
+    .venv\Scripts\activate           # Windows   (macOS/Linux: source .venv/bin/activate)
+    python -m pip install httpx selectolax
+    python -m pip freeze > requirements.txt
+    python -m pip install -r requirements.txt   # reproducir en otra máquina
+
+La python-guide documenta este "freeze" para la consistencia entre instalaciones y pone
+requirements.txt en la raíz del repositorio. Esa guía aún recomienda Pipenv, hoy minoritario.
+[Fuente: realpython/python-guide docs/dev/virtualenvs.rst "Other Notes"; docs/writing/structure.rst "Requirements File"]
+
+4.3 CÓMO APRENDER UNA LIBRERÍA NUEVA (SIN INVENTAR APIs)
+
+El error más caro es escribir una llamada que no existe o que pertenece a otra
+versión. Antes de programar contra una librería:
+
+    1. Mira la versión INSTALADA, no la que recuerdas:
+
+        uv run python -c "import httpx; print(httpx.__version__)"
+        uv run python -c "from importlib.metadata import version; print(version('selectolax'))"
+        uv pip show beautifulsoup4
+       El nombre de distribución puede no coincidir con el de import
+       (beautifulsoup4 -> bs4, pyyaml -> yaml). importlib.metadata.version usa
+       el nombre de distribución y funciona aunque no exista __version__.
+    2. Lee la documentación oficial de ESA versión (selector de versión en
+       readthedocs, el CHANGELOG y la guía de migración si cambió la versión mayor).
+    3. Inspecciona en vivo:
+        uv run python -c "import httpx, inspect; print(inspect.signature(httpx.Client.__init__))"
+        uv run python -c "import httpx; help(httpx.Timeout)"
+        uv run python -c "import httpx; print([n for n in dir(httpx) if 'Error' in n])"
+        uv run python -c "import httpx, os; print(os.path.dirname(httpx.__file__))"   # leer el fuente
+    4. Lee los tests del repositorio: son la documentación más fiable de cómo se
+       llama algo de verdad.
+    5. Ante la duda, comprueba que el símbolo existe (hasattr o un import de
+       prueba) y avisa al usuario de que lo verificaste.
+
+EJEMPLO CONCRETO, selectolax. Durante años los tutoriales usaron
+`from selectolax.parser import HTMLParser`, que era el backend Modest. selectolax
+1.0+ eliminó Modest, y ese import lanza ImportError. La API vigente es:
+
+    from selectolax.lexbor import LexborHTMLParser   # API casi idéntica: css(), css_first(), text()
+
+Se verifica en segundos antes de escribir el scraper:
+    uv run python -c "from selectolax.lexbor import LexborHTMLParser; print(LexborHTMLParser('<p>ok</p>').css_first('p').text())"
+
+Otras APIs que se suelen inventar (todas comprobadas en el fuente):
+    - requests.Session no tiene un timeout por defecto. `s.timeout = 5` no hace
+      nada. El timeout va en cada llamada o en un adapter (4.4).
+    - httpx.Client no acepta `retries=`. Va en httpx.HTTPTransport(retries=N).
+    - Si le pasas `transport=` a httpx.Client, el cliente ignora sus propios
+      `http2=`, `limits=` y `verify=`, así que hay que configurarlos en el transport.
+      [Fuente: encode/httpx httpx/_client.py _init_transport: "if transport is not None: return transport"]
+    - httpx NO sigue redirecciones por defecto (requests sí): follow_redirects=True.
+    - En BeautifulSoup el filtro por clase es `class_=`, no `class=`.
+    - De Pydantic v1 a v2: .dict() -> .model_dump(), parse_obj() -> model_validate(),
+      @validator -> @field_validator, class Config -> model_config = ConfigDict(...).
+    - En tenacity, un @retry sin argumentos reintenta para siempre y sin espera.
+
+4.4 REQUESTS: SESSION, TIMEOUT, RAISE_FOR_STATUS, RETRY
+
+    - Usa Session (como context manager) si haces más de una petición: reutiliza
+      conexiones (keep-alive del pool de urllib3), conserva cookies y cabeceras.
+      [Fuente: psf/requests docs/user/advanced.rst "Session Objects", "Keep-Alive"]
+    - Pon timeout SIEMPRE: "By default, requests do not time out unless a
+      timeout value is set explicitly. Without a timeout, your code may hang
+      for minutes or more." Usa una tupla (connect, read). Para connect, la doc
+      sugiere un valor "slightly larger than a multiple of 3" (3.05). Ninguno
+      de los dos es tiempo total de reloj, sino tiempo sin recibir bytes.
+      [Fuente: psf/requests docs/user/advanced.rst "Timeouts"; docs/user/quickstart.rst "Timeouts"]
+    - Llama a raise_for_status(): que r.json() funcione no es éxito (un 500 puede traer JSON).
+      [Fuente: psf/requests docs/user/quickstart.rst "JSON Response Content"]
+    - requests no reintenta por defecto. Monta un HTTPAdapter con urllib3 Retry.
+      OJO con el ejemplo oficial: `allowed_methods={'POST'}` REEMPLAZA el
+      conjunto por defecto (GET, HEAD, PUT, DELETE, OPTIONS, TRACE), así que
+      solo reintentaría POST. Para añadir POST: Retry.DEFAULT_ALLOWED_METHODS | {"POST"}
+      (solo si ese POST es idempotente).
+      [Fuente: psf/requests docs/user/advanced.rst "Example: Automatic Retries"]
+
+    import logging
+    from pathlib import Path
+    import requests
+    from requests.adapters import HTTPAdapter
+    from urllib3.util import Retry
+
+    log = logging.getLogger(__name__)
+    DEFAULT_TIMEOUT = (3.05, 27)  # (connect, read) en segundos
+
+    class TimeoutHTTPAdapter(HTTPAdapter):    # timeout por defecto si la llamada no trae uno
+        def __init__(self, *args, timeout=DEFAULT_TIMEOUT, **kwargs):
+            self.timeout = timeout
+            super().__init__(*args, **kwargs)
+
+        def send(self, request, **kwargs):
+            if kwargs.get("timeout") is None:
+                kwargs["timeout"] = self.timeout
+            return super().send(request, **kwargs)
+
+    def crear_sesion() -> requests.Session:
+        retries = Retry(
+            total=5, connect=3, read=2, status=3,
+            backoff_factor=0.5,                       # 0.5, 1, 2, 4... hasta backoff_max
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=Retry.DEFAULT_ALLOWED_METHODS,   # solo idempotentes
+            respect_retry_after_header=True,          # honra Retry-After
+        )
+        adapter = TimeoutHTTPAdapter(max_retries=retries, pool_maxsize=10)
+        s = requests.Session()
+        for prefijo in ("https://", "http://"):
+            s.mount(prefijo, adapter)
+        s.headers.update({"User-Agent": "mi-scraper/0.1 (+contacto@ejemplo.com)"})
+        return s
+
+    def obtener_json(s: requests.Session, url: str, **params) -> dict:
+        r = s.get(url, params=params)                 # timeout lo pone el adapter
+        r.raise_for_status()
+        return r.json()
+
+    def descargar(s: requests.Session, url: str, destino: Path) -> None:
+        # stream=True: baja solo las cabeceras y el cuerpo se lee por trozos.
+        # El with devuelve la conexión al pool aunque no se lea todo.
+        with s.get(url, stream=True, timeout=(3.05, 60)) as r:
+            r.raise_for_status()
+            with destino.open("wb") as f:
+                for chunk in r.iter_content(chunk_size=64 * 1024):
+                    f.write(chunk)
+
+    if __name__ == "__main__":
+        logging.basicConfig(level=logging.INFO)
+        with crear_sesion() as s:
+            try:
+                log.info("ok: %s", obtener_json(s, "https://httpbin.org/get", q="py")["args"])
+            except requests.exceptions.HTTPError as e:
+                log.error("HTTP %s en %s", e.response.status_code, e.request.url)
+            except requests.exceptions.RetryError as e:
+                log.error("reintentos por status agotados: %s", e)
+            except requests.exceptions.Timeout as e:          # ConnectTimeout, ReadTimeout
+                log.error("timeout: %s", e)
+            except requests.exceptions.ConnectionError as e:
+                log.error("red/DNS/conexión rechazada: %s", e)
+            except requests.exceptions.RequestException as e:  # base de todas
+                log.error("otro error: %s", e)
+
+Excepciones de requests:
+    - Todas heredan de RequestException. ConnectTimeout hereda de ConnectionError
+      y de Timeout a la vez, así que el orden de los except importa.
+    - Reintentos por status_forcelist agotados -> RetryError (MaxRetryError con
+      reason ResponseError). [Fuente: psf/requests src/requests/adapters.py HTTPAdapter.send]
+    - JSON inválido -> requests.exceptions.JSONDecodeError. Session no documenta ser
+      thread-safe: con ThreadPoolExecutor usa una por hilo (threading.local).
+
+4.5 HTTPX: CLIENT, TIMEOUT, LIMITS, ASYNC, HTTP/2, RETRIES, EXCEPCIONES
+
+httpx.Client equivale a requests.Session. Salvo en experimentos, usa un Client: la API
+de nivel superior (httpx.get) abre una conexión nueva en cada petición.
+[Fuente: encode/httpx docs/advanced/clients.md "Why use a Client?"]
+
+    - Timeout por defecto: 5 s en todo. Solo cuelga si pones timeout=None.
+      Hay 4 tipos: connect (ConnectTimeout), read (ReadTimeout, entre trozos),
+      write (WriteTimeout) y pool (PoolTimeout, esperar una conexión libre).
+      Ejemplo: httpx.Timeout(10.0, connect=5.0, pool=30.0).
+      [Fuente: encode/httpx docs/advanced/timeouts.md]
+    - Limits por defecto: max_connections=100, max_keepalive_connections=20,
+      keepalive_expiry=5. [Fuente: encode/httpx docs/advanced/resource-limits.md]
+    - HTTPTransport(retries=N) reintenta SOLO ante ConnectError o ConnectTimeout.
+      Para errores de lectura o para un 503, la doc remite a tenacity (4.9).
+      [Fuente: encode/httpx docs/advanced/transports.md "HTTP Transport"]
+    - HTTP/2 está desactivado por defecto y requiere `uv add "httpx[http2]"`.
+      Rinde con mucha concurrencia hacia un mismo host porque multiplexa en una
+      sola conexión TCP. Para saber si se usó, mira response.http_version
+      ("HTTP/1.1" o "HTTP/2"), ya que el servidor también tiene que soportarlo.
+      [Fuente: encode/httpx docs/http2.md]
+    - raise_for_status() devuelve la respuesta: client.get(url).raise_for_status().json().
+      [Fuente: encode/httpx docs/quickstart.md]
+
+Cliente síncrono (context manager):
+
+    import httpx
+
+    transport = httpx.HTTPTransport(retries=3, http2=True,       # limits/http2/retries AQUÍ
+                                    limits=httpx.Limits(max_connections=10))
+    with httpx.Client(transport=transport, timeout=httpx.Timeout(10.0, connect=5.0),
+                      headers={"User-Agent": "mi-scraper/0.1"}, follow_redirects=True,
+                      base_url="https://httpbin.org") as client:
+        try:
+            print(client.get("/get", params={"q": "py"}).raise_for_status().json()["args"])
+        except httpx.HTTPStatusError as exc:
+            print(f"HTTP {exc.response.status_code} en {exc.request.url!r}")
+        except httpx.TimeoutException as exc:
+            print(f"timeout ({type(exc).__name__}) en {exc.request.url!r}")
+        except httpx.RequestError as exc:
+            print(f"error de red en {exc.request.url!r}: {exc}")
+
+Asíncrono con concurrencia acotada (AsyncClient + gather + Semaphore):
+
+    import asyncio
+    import httpx
+    CONCURRENCIA = 10
+
+    async def fetch(client: httpx.AsyncClient, sem: asyncio.Semaphore, url: str) -> str:
+        async with sem:                               # máximo CONCURRENCIA en vuelo
+            r = await client.get(url)
+            r.raise_for_status()
+            return r.text
+
+    async def main(urls: list[str]) -> None:
+        sem = asyncio.Semaphore(CONCURRENCIA)
+        transport = httpx.AsyncHTTPTransport(         # en async: AsyncHTTPTransport
+            retries=2, http2=True,
+            limits=httpx.Limits(max_connections=CONCURRENCIA, max_keepalive_connections=CONCURRENCIA))
+        async with httpx.AsyncClient(
+            transport=transport, timeout=httpx.Timeout(15.0, connect=5.0, pool=60.0),
+            headers={"User-Agent": "mi-scraper/0.1"}, follow_redirects=True,
+        ) as client:                                  # UN solo cliente para todo
+            resultados = await asyncio.gather(
+                *(fetch(client, sem, u) for u in urls),
+                return_exceptions=True,               # un fallo no cancela el resto
+            )
+        for url, res in zip(urls, resultados):
+            if isinstance(res, httpx.HTTPStatusError):
+                print(f"{url}: HTTP {res.response.status_code}")
+            elif isinstance(res, httpx.RequestError):
+                print(f"{url}: {type(res).__name__}")
+            elif isinstance(res, Exception):
+                raise res                             # bug propio: no lo silencies
+            else:
+                print(f"{url}: {len(res)} caracteres")
+
+    if __name__ == "__main__":
+        asyncio.run(main([f"https://httpbin.org/get?i={i}" for i in range(30)]))
+
+Por qué así:
+    - Un solo AsyncClient: no lo instancies en un "hot loop", pierdes el pool.
+      [Fuente: encode/httpx docs/async.md]
+    - El Semaphore limita las corrutinas en vuelo. Sin él, con miles de URLs,
+      las tareas se acumulan esperando al pool y salta PoolTimeout.
+    - Con return_exceptions=True las excepciones llegan como valores, y hay que
+      separar los errores HTTP esperables de los bugs.
+    - Descargas grandes: `async with client.stream("GET", url) as r:` + `async for
+      chunk in r.aiter_bytes():`. Tests sin red: httpx.MockTransport(handler) o respx.
+      [Fuente: encode/httpx docs/async.md "Streaming responses"; docs/advanced/transports.md "Mock transports"]
+
+JERARQUÍA DE EXCEPCIONES DE HTTPX:
+
+    HTTPError
+      RequestError                 (tiene .request; fallo al enviar o recibir)
+        TransportError
+          TimeoutException: ConnectTimeout, ReadTimeout, WriteTimeout, PoolTimeout
+          NetworkError:     ConnectError, ReadError, WriteError, CloseError
+          ProtocolError:    LocalProtocolError, RemoteProtocolError
+          ProxyError, UnsupportedProtocol
+        DecodingError
+        TooManyRedirects
+      HTTPStatusError              (raise_for_status; tiene .request y .response)
+    InvalidURL, CookieConflict
+    StreamError: StreamConsumed, ResponseNotRead, RequestNotRead, StreamClosed
+
+[Fuente: encode/httpx docs/exceptions.md; docs/quickstart.md "Exceptions"]
+
+Reintenta TransportError y HTTPStatusError 429/5xx; nunca otros 4xx, InvalidURL ni DecodingError.
+
+4.6 PARSING HTML/XML: CUÁL USAR Y CÓMO
+
+    Librería          Selectores           Velocidad   Úsala cuando
+    ----------------  -------------------  ----------  --------------------------------------
+    beautifulsoup4    CSS (select) y       baja/media  HTML muy roto, navegar el árbol,
+     + parser lxml    find/find_all                    prototipos legibles
+    lxml              XPath 1.0; CSS con   alta        XML con namespaces, XPath complejo;
+                      el paquete cssselect             es la base de parsel
+    selectolax        solo CSS (Lexbor)    muy alta    grandes volúmenes, solo CSS
+    parsel            CSS + XPath,         alta        mismo API que Scrapy; si luego
+                      ::text / ::attr()                migrarás a Scrapy
+
+[Fuente: vinta/awesome-python README.md "HTML Manipulation"; selectolax.readthedocs.io lexbor.html]
+
+Mismo extractor con cada una (el HTML ya está descargado):
+
+    from urllib.parse import urljoin
+
+    BASE = "https://tienda.ejemplo.com/"
+    HTML = """<div class="producto"><h2> Mate </h2><span class="precio">$ 12.500,00</span>
+    <a href="/p/1">ver</a></div><div class="producto"><h2>Bombilla</h2><a href="/p/2">ver</a></div>"""
+
+    # beautifulsoup4 + lxml
+    from bs4 import BeautifulSoup
+
+    def con_bs4(html: str) -> list[dict]:
+        soup = BeautifulSoup(html, "lxml")            # parser SIEMPRE explícito
+        out = []
+        for card in soup.select("div.producto"):
+            precio, a = card.select_one("span.precio"), card.select_one("a[href]")
+            out.append({"titulo": card.select_one("h2").get_text(strip=True),
+                        "precio": precio.get_text(strip=True) if precio else None,
+                        "url": urljoin(BASE, a["href"]) if a else None})
+        return out
+
+    # lxml + XPath: doc = lxml.html.fromstring(html); doc.make_links_absolute(BASE)
+    #   titulos = [t.strip() for t in doc.xpath('//div[contains(@class,"producto")]//h2/text()')]
+
+    # selectolax (Lexbor; selectolax.parser/Modest ya NO existe en 1.0+)
+    from selectolax.lexbor import LexborHTMLParser
+
+    def con_selectolax(html: str) -> list[dict]:
+        tree = LexborHTMLParser(html)                 # no thread-safe: uno por hilo
+        out = []
+        for card in tree.css("div.producto"):
+            h2, precio, a = card.css_first("h2"), card.css_first("span.precio"), card.css_first("a")
+            href = a.attributes.get("href") if a else None   # .attributes lee; .attrs modifica
+            out.append({"titulo": h2.text(strip=True) if h2 else None,
+                        "precio": precio.text(strip=True) if precio else None,
+                        "url": urljoin(BASE, href) if href else None})
+        return out
+
+    # parsel
+    from parsel import Selector
+
+    def con_parsel(html: str) -> list[dict]:
+        out = []
+        for card in Selector(text=html).css("div.producto"):
+            href = card.css("a::attr(href)").get()
+            out.append({"titulo": card.css("h2::text").get(default="").strip(),
+                        "precio": (card.css("span.precio::text").get() or "").strip() or None,
+                        "url": urljoin(BASE, href) if href else None})
+        return out
+
+Antes de parsear HTML, busca si los datos ya vienen en JSON
+(<script type="application/ld+json">, __NEXT_DATA__ o la API XHR que usa la
+página). Si es así, usa json.loads y salta el parsing.
+
+4.7 DATOS TABULARES: PANDAS O POLARS
+
+    - Lista de dicts que solo hay que guardar: csv.DictWriter o JSONL, sin DataFrame.
+    - pandas: ecosistema más grande (Excel, gráficos). Úsalo si el usuario ya lo usa.
+    - polars está escrito en Rust: es más rápido, usa menos memoria y tiene
+      evaluación diferida (scan_* + collect()). Úsalo con volúmenes grandes.
+    [Fuente: vinta/awesome-python README.md "Data Analysis"]
+
+    import pandas as pd                               # uv add pandas pyarrow
+    df = pd.DataFrame(registros)                      # registros: list[dict]
+    df["precio"] = pd.to_numeric(df["precio"], errors="coerce")
+    df.drop_duplicates(subset="url").to_parquet("items.parquet", index=False)
+
+    import polars as pl                               # uv add polars
+    df = pl.DataFrame(registros).with_columns(pl.col("precio").cast(pl.Float64, strict=False))
+    df.unique(subset="url").write_parquet("items.parquet")
+    resumen = (pl.scan_parquet("items.parquet").filter(pl.col("precio") > 0)
+                 .group_by("moneda").agg(pl.col("precio").mean()).collect())
+
+Por defecto, Parquet (conserva tipos y comprime). CSV solo si el usuario lo va a abrir en Excel.
+
+4.8 VALIDACIÓN CON PYDANTIC V2 (MODELO PARA ITEMS SCRAPEADOS)
+
+Valida cada item justo después de extraerlo. Así, si el HTML de la web cambia,
+el problema aparece como un ValidationError claro y no como basura en el CSV.
+Para validar DataFrames completos existe pandera.
+[Fuente: vinta/awesome-python README.md "Data Validation"]
+
+    import logging
+    from datetime import datetime, timezone
+    from decimal import Decimal
+    from typing import Any
+    from pydantic import BaseModel, ConfigDict, Field, HttpUrl, ValidationError, field_validator
+
+    log = logging.getLogger(__name__)
+
+    class Producto(BaseModel):
+        model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+        url: HttpUrl
+        titulo: str = Field(min_length=1, max_length=300)
+        precio: Decimal | None = Field(default=None, ge=0)
+        moneda: str = Field(default="ARS", pattern=r"^[A-Z]{3}$")
+        scrapeado_en: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+        @field_validator("precio", mode="before")
+        @classmethod
+        def normalizar_precio(cls, v: Any) -> Any:
+            # mode="before" recibe el valor crudo, antes de convertirlo a Decimal.
+            if v is None or (isinstance(v, str) and not v.strip()):
+                return None
+            if isinstance(v, str):                    # "$ 12.500,00" -> "12500.00" (es-AR)
+                v = v.replace("$", "").replace("\xa0", "").replace(" ", "")
+                v = v.replace(".", "").replace(",", ".")
+            return v
+
+    def validar(crudos: list[dict]) -> list[Producto]:
+        ok: list[Producto] = []
+        for raw in crudos:
+            try:
+                ok.append(Producto.model_validate(raw))
+            except ValidationError as e:              # e.errors(): loc, msg, type, input
+                log.warning("descartado %s: %s", raw.get("url"), e.errors())
+        if crudos and len(ok) < 0.9 * len(crudos):
+            raise RuntimeError("más del 10 % de items inválidos: ¿cambió el HTML?")
+        return ok
+
+    # Serializar: p.model_dump_json() por línea (JSONL) o p.model_dump(mode="json") (todo a str/num).
+
+extra="forbid" detecta claves mal escritas mientras desarrollas. Usa extra="ignore"
+si el dict crudo trae campos que no interesan. Ajusta normalizar_precio al formato del sitio.
+[Fuente: pydantic.dev/docs/validation/latest/concepts/validators (field_validator mode='before' + @classmethod)]
+
+4.9 REINTENTOS CON TENACITY
+
+Para lo que el transport no cubre: ReadTimeout, 429 y 503 en httpx (lo recomienda su doc) o
+lógica no HTTP. Por defecto reintenta "forever without waiting": define siempre stop y wait.
+[Fuente: tenacity.readthedocs.io; encode/httpx docs/advanced/transports.md]
+
+    import logging
+    import httpx
+    from tenacity import (before_sleep_log, retry, retry_if_exception,
+                          stop_after_attempt, stop_after_delay, wait_random_exponential)
+
+    log = logging.getLogger(__name__)
+    REINTENTABLES = {429, 500, 502, 503, 504}
+
+    def es_reintentable(exc: BaseException) -> bool:
+        if isinstance(exc, httpx.HTTPStatusError):
+            return exc.response.status_code in REINTENTABLES
+        return isinstance(exc, httpx.TransportError)  # timeouts, red, protocolo
+
+    @retry(
+        retry=retry_if_exception(es_reintentable),
+        stop=(stop_after_attempt(5) | stop_after_delay(120)),
+        wait=wait_random_exponential(multiplier=1, max=30),  # backoff con jitter
+        before_sleep=before_sleep_log(log, logging.WARNING),
+        reraise=True,                    # al final lanza la excepción original, no RetryError
+    )
+    async def get_con_reintentos(client: httpx.AsyncClient, url: str) -> httpx.Response:
+        r = await client.get(url)
+        r.raise_for_status()
+        return r
+
+    - @retry sirve igual para funciones síncronas y corrutinas. Para un bloque
+      concreto: `async for attempt in AsyncRetrying(...): with attempt: ...`.
+    - Dentro de `async with sem:`, el hueco del semáforo queda ocupado mientras duerme.
+    - El jitter evita que los reintentos se sincronicen. Respetar Retry-After exige
+      un wait propio (urllib3 Retry ya lo respeta, ver 4.4).
+    - No apiles capas de reintentos (transport + tenacity + bucle propio) sin
+      calcular antes el peor caso de intentos y de tiempo.
+
+4.10 CLI CON ARGPARSE O TYPER
+
+argparse está en la stdlib y basta para scripts. typer ("Modern CLI framework
+that uses Python type hints. Built on Click") genera la ayuda y la validación a
+partir de los tipos. [Fuente: vinta/awesome-python README.md "CLI Development"]
+
+    import argparse
+    from pathlib import Path
+    p = argparse.ArgumentParser(description="Scrapea productos de una tienda.")
+    p.add_argument("url", help="URL del listado inicial")
+    p.add_argument("-o", "--salida", type=Path, default=Path("items.jsonl"))
+    p.add_argument("-c", "--concurrencia", type=int, default=5)
+    p.add_argument("-v", "--verbose", action="store_true")
+    args = p.parse_args()
+    if not 1 <= args.concurrencia <= 50:
+        p.error("--concurrencia debe estar entre 1 y 50")   # sale con código 2
+
+typer (uv add typer):
+
+    from pathlib import Path
+    from typing import Annotated
+    import typer
+
+    app = typer.Typer(help="Scrapea productos de una tienda.")
+
+    @app.command()
+    def scrape(
+        url: Annotated[str, typer.Argument(help="URL del listado inicial")],
+        salida: Annotated[Path, typer.Option("--salida", "-o")] = Path("items.jsonl"),
+        concurrencia: Annotated[int, typer.Option("--concurrencia", "-c", min=1, max=50)] = 5,
+        verbose: Annotated[bool, typer.Option("--verbose", "-v")] = False,
+    ) -> None:
+        typer.echo(f"Scrapeando {url} -> {salida} (concurrencia={concurrencia})")
+
+    if __name__ == "__main__":
+        app()
+
+`uv run python cli.py https://... -o out.jsonl -c 10`. Con un único @app.command()
+no hace falta nombre de subcomando. Para barras de progreso: rich o tqdm.
+
+4.11 MAPA DE LIBRERÍAS POR CATEGORÍA
+
+    Categoría             Por defecto             Alternativas / cuándo
+    --------------------  ----------------------  ---------------------------------------------
+    HTTP síncrono         requests                httpx (sync+async, HTTP/2), urllib3, urllib.request
+    HTTP asíncrono        httpx (AsyncClient)     aiohttp; httpx2 (fork de httpx de Pydantic)
+    URLs                  urllib.parse (stdlib)   yarl
+    Navegador headless    playwright              selenium, seleniumbase
+    Framework de crawl    scrapy                  crawl4ai, scrapling, browser-use (agentes)
+    Extracción de texto   trafilatura             markdownify (HTML -> Markdown), feedparser (RSS)
+    Parsing HTML          selectolax / parsel     beautifulsoup4 + lxml (HTML roto, legibilidad)
+    Parsing XML           lxml                    xml.etree (stdlib), defusedxml (no confiable), xmltodict
+    JSON rápido           json (stdlib)           orjson, msgspec
+    Validación            pydantic                msgspec, jsonschema, pandera (DataFrames)
+    Configuración         pydantic-settings       python-dotenv, tomllib (stdlib)
+    DataFrames            polars                  pandas (ecosistema), ibis-framework
+    Reintentos            tenacity                urllib3 Retry (requests), HTTPTransport(retries=)
+    Async/concurrencia    asyncio (stdlib)        anyio, trio; concurrent.futures (stdlib)
+    CLI                   argparse (stdlib)       typer, click, cyclopts
+    Terminal / progreso   rich                    tqdm, alive-progress
+    Logging               logging (stdlib)        structlog, loguru
+    Testing               pytest                  hypothesis; nox / tox
+    Mocks HTTP            respx (httpx)           responses (requests), vcrpy, httpx.MockTransport
+    Datos falsos          faker                   polyfactory, factory-boy
+    Entorno y paquetes    uv                      venv + pip (stdlib), poetry, hatch, pipx (CLIs)
+
+[Fuente: vinta/awesome-python README.md: HTTP Clients, Web Scraping, HTML Manipulation,
+Serialization, Data Analysis/Validation, Testing, Logging, CLI, Async, Environment/Package Management]
+
+Regla final: la tabla es un punto de partida. Si el proyecto del usuario ya usa
+otra librería de la misma categoría, sigue con esa. No mezcles requests con
+httpx, ni bs4 con selectolax, en el mismo código sin una razón explícita.
+
+
+======================================================================
+ 5. WEB SCRAPING CON PYTHON
+======================================================================
+
+Scraping: extraer con un programa los datos de paginas web conservando su
+estructura [Fuente: python-guide/docs/scenarios/scrape.rst]. Orden para el
+asistente: etica, ruta mas barata hacia los datos, y despues el codigo.
+
+5.1 ETICA Y LEGALIDAD (SIEMPRE ANTES DE ESCRIBIR CODIGO)
+
+- Antes de proponer un scraper, pregunta o verifica:
+  - Si hay API oficial, export o dataset publico: es mas rapido para ti y
+    mas barato para el sitio, y los terminos pueden fijar una tasa
+    permitida [Fuente: scrapy/docs/topics/optimize.rst].
+  - Los terminos de uso (ToS): si prohiben la extraccion automatizada,
+    dilo y propone pedir permiso o usar la API.
+  - Si hay datos personales. Bajo GDPR y leyes similares (Ley 25.326 en
+    Argentina, LGPD en Brasil) necesitas base legal, minimizacion (solo los
+    campos necesarios), plazo de retencion y almacenamiento seguro. Si no
+    hacen falta, no los guardes o seudonimizalos.
+  - Derechos de autor: extraer hechos no es republicar textos o imagenes.
+  - Nunca scrapear detras de un login sin autorizacion explicita.
+- No sobrecargar: una peticion a la vez por dominio y unos segundos de
+  espera es el punto de partida; rastrea en horas de baja carga del sitio
+  [Fuente: scrapy/docs/topics/optimize.rst].
+- Identificate: un User-Agent con proyecto y URL o email de contacto deja
+  que el dueno te pida ajustar el crawler en vez de bloquearlo [Fuente:
+  scrapy/docs/topics/practices.rst, scrapy/docs/intro/tutorial.rst].
+- Si el sitio bloquea (403, CAPTCHA, "acceso denegado"), el asistente NO
+  propone evasion (rotar proxies o User-Agents, falsificar huellas TLS,
+  resolver CAPTCHAs). Recomienda bajar la velocidad, contactar al dueno,
+  pedir permiso o usar la API oficial.
+
+robots.txt con la biblioteca estandar (urllib.robotparser). Metodos:
+can_fetch(useragent, url), crawl_delay(useragent) y request_rate(useragent)
+desde Python 3.6, site_maps() desde 3.8 [Fuente: docs.python.org/3/library/
+urllib.robotparser.html]. RobotFileParser.read() descarga con urllib sin
+timeout ni tu User-Agent; es mejor descargarlo con httpx y pasarlo a parse():
+
+    import httpx
+    from urllib.parse import urlsplit
+    from urllib.robotparser import RobotFileParser
+
+    USER_AGENT = "MiProyectoBot/1.0 (+https://ejemplo.org/bot; datos@ejemplo.org)"
+
+    def cargar_robots(url_base: str) -> RobotFileParser:
+        partes = urlsplit(url_base)
+        robots_url = f"{partes.scheme}://{partes.netloc}/robots.txt"
+        rp = RobotFileParser(robots_url)
+        try:
+            r = httpx.get(robots_url, headers={"User-Agent": USER_AGENT},
+                          timeout=10, follow_redirects=True)
+        except httpx.HTTPError:
+            rp.disallow_all = True        # sin respuesta: ser conservador
+            return rp
+        if r.status_code in (401, 403) or r.status_code >= 500:
+            rp.disallow_all = True        # mismo criterio que read() para 401/403
+        elif 400 <= r.status_code < 500:
+            rp.allow_all = True           # 404: no hay restricciones
+        else:
+            rp.parse(r.text.splitlines())
+        return rp
+
+    rp = cargar_robots("https://quotes.toscrape.com/")
+    print("Permitido:", rp.can_fetch(USER_AGENT, "https://quotes.toscrape.com/page/2/"))
+    print("Crawl-delay:", rp.crawl_delay(USER_AGENT))    # None si no hay
+    print("Request-rate:", rp.request_rate(USER_AGENT))  # None o (requests, seconds)
+    print("Sitemaps:", rp.site_maps())
+
+- Si hay Crawl-delay o Request-rate, traducelos a tu demora entre peticiones.
+  Scrapy obedece robots.txt con ROBOTSTXT_OBEY pero no aplica Crawl-delay ni
+  Request-rate: conviertelos a mano en DOWNLOAD_DELAY y concurrencia
+  [Fuente: scrapy/docs/topics/optimize.rst]. robots.txt no es un permiso
+  legal: cumplirlo es lo minimo, no lo suficiente.
+
+5.2 ARBOL DE DECISION: QUE HERRAMIENTA USAR
+
+    1. Hay API oficial, feed RSS, sitemap o export?     -> usala (httpx)
+    2. DevTools > Network > Fetch/XHR, recargar: los
+       datos llegan en un JSON interno?                 -> pide ese JSON (httpx)
+    3. Estan en "Ver codigo fuente" (no solo en el
+       DOM de "Inspeccionar")?                          -> httpx/requests +
+                                                           selectolax/lxml/bs4
+    4. Solo tras ejecutar JS y no puedes reproducir
+       la peticion que los trae?                        -> Playwright
+    5. Miles de paginas, enlaces, reintentos, cache,
+       limites por dominio?                             -> Scrapy (+ scrapy-playwright si hay JS)
+
+- Para encontrar el origen de los datos: si estan en un script embebido
+  (var data = {...}) extraelos con regex + json.loads o con chompjs; si
+  vienen de otra URL, reproduce esa peticion (los navegadores permiten
+  "Copy as cURL" y Scrapy tiene Request.from_curl). Usa un navegador headless
+  solo si reproducir las peticiones no compensa [Fuente:
+  scrapy/docs/topics/dynamic-content.rst].
+- Parsers: selectolax (muy rapido, solo CSS), lxml (C, XPath y CSS via
+  cssselect), BeautifulSoup (Python puro, tolerante y lento), parsel (los
+  selectores de Scrapy, CSS + XPath, usable sola) [Fuente:
+  awesome-web-scraping/python.md].
+- VERIFICA LA VERSION INSTALADA antes de copiar ejemplos: selectolax 1.0+
+  elimino el backend Modest, asi que el clasico
+  "from selectolax.parser import HTMLParser" (y awesome-web-scraping aun
+  describe selectolax como "bindings to Modest") lanza ImportError. Usa
+  siempre "from selectolax.lexbor import LexborHTMLParser"; la API es casi
+  identica: .css(), .css_first(sel, default=None), .text(strip=True),
+  .attributes.
+
+5.3 FLUJO DE TRABAJO RECOMENDADO
+
+1. Inspeccionar en DevTools: elemento, atributos estables, pestaña Network.
+2. Descargar UNA pagina de muestra y guardarla como fixture
+   (tests/fixtures/listado.html). El tutorial de Scrapy empieza igual:
+   guardando response.body a disco [Fuente: scrapy/docs/intro/tutorial.rst].
+3. Escribir el parser como funcion pura: recibe str HTML, devuelve dicts.
+4. Testear el parser contra el fixture, sin red.
+5. Recien entonces conectar la red, con limites de velocidad y cache.
+
+    # parser_citas.py
+    from selectolax.lexbor import LexborHTMLParser
+
+    def parsear_citas(html: str) -> list[dict]:
+        arbol = LexborHTMLParser(html)
+        citas = []
+        for nodo in arbol.css("div.quote"):
+            texto = nodo.css_first("span.text")
+            autor = nodo.css_first("small.author")
+            citas.append({
+                "texto": texto.text(strip=True) if texto else None,
+                "autor": autor.text(strip=True) if autor else None,
+                "tags": [t.text(strip=True) for t in nodo.css("a.tag")],
+            })
+        return citas
+
+    def siguiente_pagina(html: str) -> str | None:
+        enlace = LexborHTMLParser(html).css_first("li.next > a")
+        return enlace.attributes.get("href") if enlace else None
+
+    # tests/test_parser.py   (pytest -q, con parser_citas.py en la raiz)
+    from pathlib import Path
+
+    import httpx
+    from parser_citas import parsear_citas, siguiente_pagina
+
+    FIXTURE = Path(__file__).parent / "fixtures" / "quotes_p1.html"
+
+    def setup_module():          # descarga el fixture UNA sola vez
+        if not FIXTURE.exists():
+            FIXTURE.parent.mkdir(parents=True, exist_ok=True)
+            r = httpx.get("https://quotes.toscrape.com/page/1/", timeout=10)
+            FIXTURE.write_text(r.text, encoding="utf-8")
+
+    def test_extrae_diez_citas():
+        citas = parsear_citas(FIXTURE.read_text(encoding="utf-8"))
+        assert len(citas) == 10 and citas[0]["autor"] == "Albert Einstein"
+        assert all(c["texto"] for c in citas)
+
+    def test_paginacion():
+        assert siguiente_pagina(FIXTURE.read_text(encoding="utf-8")) == "/page/2/"
+
+- Tolera faltantes: .get() devuelve None si no hay coincidencia; indexar
+  [0] lanza IndexError. Mejor ALGUNOS datos que caerse por un campo
+  [Fuente: scrapy/docs/intro/tutorial.rst]. Versiona el fixture en git.
+
+5.4 SELECTORES ROBUSTOS
+
+- Orden de preferencia: id estable > data-* (data-testid, data-sku) >
+  atributos semanticos (itemprop, aria-label, name) > clases con significado
+  (.price) > estructura relativa corta. Evita clases generadas (css-1x2y3z,
+  sc-AbCd) y XPath absolutos copiados de DevTools (/html/body/div[3]/div[2]/
+  span): se rompen con cualquier cambio de maquetacion.
+- Ancla relativo a un contenedor: primero selecciona cada tarjeta y luego
+  busca dentro (quote.css("span.text::text")), como hace el tutorial de
+  Scrapy [Fuente: scrapy/docs/intro/tutorial.rst].
+- XPath sirve cuando necesitas el contenido: "el enlace que contiene el texto
+  Next". Cuidado: //li[1] es el primer li de CADA padre; (//li)[1] es el
+  primero del documento. Para clases en XPath, contains(@class,"foo") tambien
+  casa "foobar"; usa CSS (p.foo) o has-class("foo") en parsel/Scrapy
+  [Fuente: scrapy/docs/topics/selectors.rst].
+- Normaliza texto y convierte tipos al final (price-parser, dateparser)
+  [Fuente: awesome-web-scraping/python.md]. Centraliza los selectores en
+  constantes para actualizarlos rapido cuando el sitio cambie.
+
+    from parsel import Selector
+
+    html = ('<div data-sku="A1" class="card"><span itemprop="price">$ 1.299,50</span>'
+            '<a href="/p/a1">Ver <b>mas</b></a></div><a href="/p/2">Next</a>')
+    sel = Selector(text=html)
+    for card in sel.css("div[data-sku]"):
+        print({
+            "sku": card.attrib["data-sku"],
+            "precio_raw": card.css('[itemprop="price"]::text').get(default="").strip(),
+            "url": card.css("a::attr(href)").get(),
+            "texto_link": " ".join(card.xpath(".//a//text()").getall()).strip(),
+        })
+    print(sel.xpath('//a[contains(normalize-space(.), "Next")]/@href').get())
+
+5.5 CLIENTE HTTP CORTES: TIMEOUTS, SESION, RATE LIMIT, REINTENTOS
+
+- Timeouts SIEMPRE: requests no tiene timeout por defecto; httpx corta a
+  los 5 s de inactividad y acepta httpx.Timeout(10.0, connect=60.0)
+  [Fuente: httpx/docs/advanced/timeouts.md].
+- Sesion reutilizable (httpx.Client / requests.Session): reusa conexiones y
+  cookies. httpx NO sigue redirecciones salvo follow_redirects=True
+  [Fuente: httpx/docs/quickstart.md].
+- HTTPTransport(retries=N) solo reintenta ConnectError/ConnectTimeout; para
+  429/503 implementalo o usa tenacity [Fuente:
+  httpx/docs/advanced/transports.md].
+- Backoff exponencial con jitter, respetando Retry-After (segundos o fecha
+  HTTP), solo para errores transitorios (Scrapy: 500, 502, 503, 504, 522,
+  524, 408, 429) [Fuente: scrapy/docs/topics/downloader-middleware.rst].
+  Nunca reintentar 403/404 en bucle.
+
+    # cliente.py
+    import random
+    import time
+    from datetime import datetime, timezone
+    from email.utils import parsedate_to_datetime
+    from urllib.parse import urlsplit
+
+    import httpx
+
+    USER_AGENT = "MiProyectoBot/1.0 (+https://ejemplo.org/bot; datos@ejemplo.org)"
+    REINTENTABLES = {408, 429, 500, 502, 503, 504}
+
+    class ClienteCortes:
+        def __init__(self, demora: float = 2.0, max_reintentos: int = 4,
+                     backoff_base: float = 1.0, backoff_max: float = 60.0):
+            self.demora = demora
+            self.max_reintentos = max_reintentos
+            self.backoff_base = backoff_base
+            self.backoff_max = backoff_max
+            self._ultima: dict[str, float] = {}       # dominio -> instante
+            self.http = httpx.Client(
+                headers={"User-Agent": USER_AGENT, "Accept-Language": "es"},
+                timeout=httpx.Timeout(15.0, connect=10.0),
+                follow_redirects=True,
+                transport=httpx.HTTPTransport(retries=2),  # solo fallos de conexion
+            )
+
+        def _esperar_turno(self, url: str) -> None:
+            dominio = urlsplit(url).netloc
+            transcurrido = time.monotonic() - self._ultima.get(dominio, 0.0)
+            pendiente = self.demora * random.uniform(0.75, 1.25) - transcurrido
+            if pendiente > 0:
+                time.sleep(pendiente)
+            self._ultima[dominio] = time.monotonic()
+
+        @staticmethod
+        def _retry_after(resp: httpx.Response) -> float | None:
+            valor = resp.headers.get("Retry-After")
+            if not valor:
+                return None
+            if valor.strip().isdigit():
+                return float(valor)
+            try:
+                fecha = parsedate_to_datetime(valor)
+                return max(0.0, (fecha - datetime.now(timezone.utc)).total_seconds())
+            except (TypeError, ValueError):
+                return None
+
+        def get(self, url: str, **kwargs) -> httpx.Response:
+            for intento in range(self.max_reintentos + 1):
+                self._esperar_turno(url)
+                try:
+                    resp = self.http.get(url, **kwargs)
+                except (httpx.TimeoutException, httpx.TransportError):
+                    if intento == self.max_reintentos:
+                        raise
+                    espera = None
+                else:
+                    if resp.status_code not in REINTENTABLES:
+                        resp.raise_for_status()      # 4xx definitivos -> excepcion
+                        return resp
+                    if intento == self.max_reintentos:
+                        resp.raise_for_status()
+                    espera = self._retry_after(resp)
+                if espera is None:                    # "full jitter"
+                    tope = min(self.backoff_max, self.backoff_base * 2 ** intento)
+                    espera = random.uniform(0, tope)
+                time.sleep(min(espera, 300))         # Retry-After absurdo: tope 5 min
+            raise RuntimeError("inalcanzable")
+
+        def close(self) -> None:
+            self.http.close()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            self.close()
+
+- Cookies: el Client conserva las cookies entre peticiones (p. ej. tras un
+  login autorizado; para CSRF, copia el input hidden del GET previo al
+  POST). En Scrapy: COOKIES_ENABLED = False si no hace falta sesion
+  [Fuente: scrapy/docs/topics/practices.rst].
+- 429 sostenido: baja la tasa de forma permanente, no solo en el reintento.
+
+5.6 PAGINACION
+
+- Patrones: enlace "siguiente", ?page=N (parar con pagina vacia o total),
+  cursor en APIs JSON (usar el next_cursor devuelto) y scroll infinito
+  (casi siempre un XHR paginado: pide ese endpoint).
+- SIEMPRE un limite de paginas, un set de visitadas contra ciclos y urljoin
+  para href relativos. Si conoces el total, genera todas las URLs de
+  entrada [Fuente: scrapy/docs/topics/optimize.rst].
+
+    # scraper_estatico.py
+    import json
+    from urllib.parse import urljoin
+
+    from cliente import ClienteCortes
+    from parser_citas import parsear_citas, siguiente_pagina
+
+    def recorrer(inicio: str, max_paginas: int = 50):
+        visitadas: set[str] = set()
+        url = inicio
+        with ClienteCortes(demora=2.0) as cliente:
+            while url and url not in visitadas and len(visitadas) < max_paginas:
+                visitadas.add(url)
+                html = cliente.get(url).text
+                for cita in parsear_citas(html):
+                    yield {**cita, "url_origen": url}
+                siguiente = siguiente_pagina(html)
+                url = urljoin(url, siguiente) if siguiente else None
+
+    def recorrer_api(base: str, max_paginas: int = 100):
+        # Endpoint JSON interno visto en Network (quotes.toscrape.com/scroll)
+        with ClienteCortes(demora=1.5) as cliente:
+            for pagina in range(1, max_paginas + 1):
+                datos = cliente.get(base, params={"page": pagina}).json()
+                yield from datos["quotes"]
+                if not datos.get("has_next"):
+                    break
+
+    if __name__ == "__main__":
+        with open("citas.jsonl", "w", encoding="utf-8") as f:
+            for item in recorrer("https://quotes.toscrape.com/page/1/"):
+                f.write(json.dumps(item, ensure_ascii=False) + "\n")
+
+5.7 CACHE LOCAL PARA DESARROLLO
+
+- Mientras ajustas selectores no re-descargues: Scrapy HTTPCACHE_ENABLED =
+  True (desactivada por defecto; EXPIRATION_SECS = 0 = nunca expira)
+  [Fuente: scrapy/docs/topics/downloader-middleware.rst], requests-cache,
+  hishel (httpx) o una cache en disco minima:
+
+    import hashlib
+    from pathlib import Path
+
+    CACHE = Path(".cache_html")
+
+    def get_con_cache(cliente, url: str) -> str:
+        CACHE.mkdir(exist_ok=True)
+        ruta = CACHE / (hashlib.sha256(url.encode()).hexdigest() + ".html")
+        if ruta.exists():
+            return ruta.read_text(encoding="utf-8")
+        html = cliente.get(url).text
+        ruta.write_text(html, encoding="utf-8")
+        return html
+
+- Agrega .cache_html/ y httpcache/ a .gitignore; en produccion, con expiracion.
+
+5.8 SCRAPY: CRAWLING A ESCALA
+
+Crear proyecto y spider:
+
+    pip install scrapy
+    scrapy startproject citas
+    cd citas
+    scrapy genspider quotes quotes.toscrape.com
+    scrapy shell "https://quotes.toscrape.com/page/1/"   # probar selectores
+    scrapy crawl quotes -O citas.jsonl                   # -O sobrescribe, -o agrega
+
+- JSON Lines (.jsonl) es preferible para agregar: cada registro es una
+  linea, se procesa en streaming y no se corrompe como un .json al usar -o
+  [Fuente: scrapy/docs/intro/tutorial.rst].
+- Peticiones iniciales: start_urls o "async def start(self)".
+  start_requests() se depreco en 2.13 y se elimino en 2.16 (ya no se
+  llama); desde 2.14 el argumento "spider" de process_item/open_spider esta
+  deprecado [Fuente: scrapy/docs/intro/tutorial.rst, scrapy/docs/news.rst].
+  Con Scrapy < 2.13 usa start_requests() y process_item(self, item, spider).
+
+citas/items.py (dataclass: los exportadores conocen todos los campos aunque
+el primer item no los tenga) [Fuente: scrapy/docs/topics/items.rst]:
+
+    from dataclasses import dataclass, field
+
+    @dataclass
+    class Cita:
+        texto: str | None = None
+        autor: str | None = None
+        tags: list[str] = field(default_factory=list)
+        url_autor: str | None = None
+        url_origen: str | None = None
+
+citas/spiders/quotes.py:
+
+    import scrapy
+
+    from citas.items import Cita
+
+    class QuotesSpider(scrapy.Spider):
+        name = "quotes"
+        allowed_domains = ["quotes.toscrape.com"]
+        start_urls = ["https://quotes.toscrape.com/page/1/"]
+
+        def parse(self, response):
+            for q in response.css("div.quote"):
+                yield Cita(
+                    texto=q.css("span.text::text").get(),
+                    autor=q.css("small.author::text").get(),
+                    tags=q.css("div.tags a.tag::text").getall(),
+                    url_autor=response.urljoin(q.css(".author + a::attr(href)").get("")),
+                    url_origen=response.url,
+                )
+            # response.follow acepta URLs relativas; el dupefilter evita repetir
+            yield from response.follow_all(css="li.next a", callback=self.parse)
+
+citas/pipelines.py (limpieza/validacion y deduplicado; un pipeline debe
+devolver el item o lanzar DropItem) [Fuente:
+scrapy/docs/topics/item-pipeline.rst]:
+
+    import hashlib
+
+    from itemadapter import ItemAdapter
+    from scrapy.exceptions import DropItem
+
+    class LimpiezaPipeline:
+        def process_item(self, item):
+            a = ItemAdapter(item)
+            if not a.get("texto"):
+                raise DropItem("cita sin texto")
+            a["texto"] = a["texto"].strip().strip("“”")
+            a["autor"] = (a.get("autor") or "").strip() or None
+            return item
+
+    class DedupePipeline:
+        def __init__(self):
+            self.vistos: set[str] = set()
+
+        def process_item(self, item):
+            a = ItemAdapter(item)
+            clave = hashlib.sha1(f"{a['autor']}|{a['texto']}".encode()).hexdigest()
+            if clave in self.vistos:
+                raise DropItem(f"duplicado: {clave}")
+            self.vistos.add(clave)
+            return item
+
+citas/settings.py (valores recomendados; la plantilla de startproject ya trae
+ROBOTSTXT_OBEY = True, CONCURRENT_REQUESTS_PER_DOMAIN = 1 y DOWNLOAD_DELAY = 1)
+[Fuente: scrapy/scrapy/templates/project/module/settings.py.tmpl,
+scrapy/docs/topics/settings.rst]:
+
+    BOT_NAME = "citas"
+    SPIDER_MODULES = ["citas.spiders"]
+    NEWSPIDER_MODULE = "citas.spiders"
+    USER_AGENT = "citas (+https://ejemplo.org/bot; datos@ejemplo.org)"
+    ROBOTSTXT_OBEY = True
+    CONCURRENT_REQUESTS_PER_DOMAIN = 1
+    DOWNLOAD_DELAY = 1            # segundos minimos entre peticiones al mismo dominio
+    DOWNLOAD_TIMEOUT = 30         # por defecto 180 s, demasiado para scraping
+    AUTOTHROTTLE_ENABLED = True
+    AUTOTHROTTLE_START_DELAY = 5
+    AUTOTHROTTLE_MAX_DELAY = 60
+    AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0   # <1 = mas cortes
+    RETRY_TIMES = 2               # reintentos ademas del primer intento
+    HTTPCACHE_ENABLED = True      # solo en desarrollo
+    HTTPCACHE_EXPIRATION_SECS = 86400
+    ITEM_PIPELINES = {
+        "citas.pipelines.LimpiezaPipeline": 300,
+        "citas.pipelines.DedupePipeline": 400,
+    }
+    FEEDS = {"salida/citas-%(time)s.jsonl": {"format": "jsonlines", "encoding": "utf8"}}
+
+- DOWNLOAD_DELAY admite decimales (2.5 = maximo 4 peticiones cada 10 s) y
+  se aleatoriza +/-50% via DOWNLOAD_DELAY_JITTER (antes
+  RANDOMIZE_DOWNLOAD_DELAY) [Fuente: scrapy/docs/topics/settings.rst].
+  DOWNLOAD_SLOTS sube la concurrencia solo para un dominio que lo tolera
+  (p. ej. un sandbox) [Fuente: scrapy/docs/intro/tutorial.rst].
+- AutoThrottle: arranca con AUTOTHROTTLE_START_DELAY; demora objetivo =
+  latencia / AUTOTHROTTLE_TARGET_CONCURRENCY, promediada con la anterior;
+  las respuestas no-200 no pueden reducirla; nunca baja de DOWNLOAD_DELAY
+  ni sube de AUTOTHROTTLE_MAX_DELAY. Supera a una demora fija chica porque
+  los errores suelen ser rapidos y un limite fijo aceleraria justo cuando
+  hay que frenar [Fuente: scrapy/docs/topics/autothrottle.rst].
+- Varias spiders en un proceso: cada una tiene sus propios limites, divide
+  la concurrencia entre ellas. Desde un script:
+  AsyncCrawlerProcess(get_project_settings()).crawl("quotes") y .start()
+  [Fuente: scrapy/docs/topics/practices.rst].
+- Vigila en las estadisticas los contadores de 429/503, retry/count y la
+  latencia: si suben, te pasaste del limite [Fuente:
+  scrapy/docs/topics/optimize.rst].
+
+5.9 PLAYWRIGHT: PAGINAS QUE REQUIEREN JAVASCRIPT
+
+Instalacion: pip install playwright && playwright install chromium.
+Playwright controla Chromium, Firefox y WebKit con una sola API, sync y async
+[Fuente: playwright-python/README.md].
+
+- Nada de time.sleep / wait_for_timeout fijos: espera un selector o una
+  respuesta de red concreta (los locators ya esperan solos).
+- Antes de raspar el DOM, mira si la pagina carga un JSON (XHR/fetch):
+  capturarlo es mas estable. Bloquea imagenes/fuentes y define timeouts.
+
+Ejemplo sync (DOM renderizado por JS en quotes.toscrape.com/js/):
+
+    from playwright.sync_api import sync_playwright
+
+    UA = "MiProyectoBot/1.0 (+https://ejemplo.org/bot; datos@ejemplo.org)"
+
+    def bloquear_recursos(route):
+        if route.request.resource_type in {"image", "font", "media"}:
+            return route.abort()
+        return route.continue_()
+
+    def main():
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(user_agent=UA)
+            context.set_default_timeout(15_000)
+            page = context.new_page()
+            page.route("**/*", bloquear_recursos)
+            page.goto("https://quotes.toscrape.com/js/", wait_until="domcontentloaded")
+            page.wait_for_selector("div.quote")          # espera explicita, no sleep
+            citas = [{"texto": q.locator("span.text").inner_text(),
+                      "autor": q.locator("small.author").inner_text()}
+                     for q in page.locator("div.quote").all()]
+            print(len(citas), citas[0])   # o parsear_citas(page.content()) de 5.3
+            browser.close()
+
+    main()
+
+Ejemplo async interceptando la respuesta JSON (scroll infinito que llama a
+/api/quotes?page=N):
+
+    import asyncio
+
+    from playwright.async_api import async_playwright
+
+    def es_api(resp) -> bool:
+        return "/api/quotes" in resp.url and resp.status == 200
+
+    async def main():
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            # Registrar la espera ANTES de la accion que dispara la peticion
+            async with page.expect_response(es_api, timeout=15_000) as info:
+                await page.goto("https://quotes.toscrape.com/scroll")
+            respuesta = await info.value
+            datos = await respuesta.json()
+            print(respuesta.url, len(datos["quotes"]), "has_next:", datos["has_next"])
+            await browser.close()
+
+    asyncio.run(main())
+
+- Conocida la URL de la API (respuesta.url), abandona el navegador y pidela
+  con httpx (recorrer_api en 5.6) con los mismos limites. Para escuchar
+  todas las respuestas: page.on("response", callback).
+
+5.10 ALMACENAMIENTO
+
+- JSONL para salida incremental; CSV solo para datos planos (utf-8-sig si
+  lo abre Excel); SQLite para deduplicar, actualizar o consultar.
+- Guarda el raw (HTML/JSON comprimido, con URL y fecha): si el parser tenia
+  un bug, re-parseas sin volver a descargar.
+- Deduplica por clave natural (id, URL canonica) o hash del contenido; el
+  dupefilter de Scrapy filtra peticiones, los items duplicados van en un
+  pipeline [Fuente: scrapy/docs/intro/tutorial.rst,
+  scrapy/docs/topics/item-pipeline.rst].
+
+    import gzip
+    import hashlib
+    import json
+    import sqlite3
+    from datetime import datetime, timezone
+    from pathlib import Path
+
+    class Almacen:
+        def __init__(self, db="datos.sqlite", raw_dir="raw"):
+            self.raw_dir = Path(raw_dir)
+            self.raw_dir.mkdir(exist_ok=True)
+            self.con = sqlite3.connect(db)
+            self.con.execute("""
+                CREATE TABLE IF NOT EXISTS items (
+                    clave TEXT PRIMARY KEY,
+                    url TEXT, datos TEXT, visto_en TEXT
+                )""")
+
+        def guardar_raw(self, url: str, contenido: str) -> Path:
+            nombre = hashlib.sha256(url.encode()).hexdigest()[:16] + ".html.gz"
+            ruta = self.raw_dir / nombre
+            with gzip.open(ruta, "wt", encoding="utf-8") as f:
+                f.write(contenido)
+            return ruta
+
+        def upsert(self, item: dict, url: str) -> bool:
+            clave = hashlib.sha1(json.dumps(item, sort_keys=True,
+                                            ensure_ascii=False).encode()).hexdigest()
+            ahora = datetime.now(timezone.utc).isoformat()
+            cur = self.con.execute(
+                "INSERT OR IGNORE INTO items VALUES (?, ?, ?, ?)",
+                (clave, url, json.dumps(item, ensure_ascii=False), ahora))
+            self.con.commit()
+            return cur.rowcount == 1          # True si era nuevo
+
+- Registra URL, fecha de captura y version del parser: facilitan auditar y
+  atender solicitudes de borrado de datos personales.
+
+5.11 HERRAMIENTAS POR CATEGORIA
+
+[Fuente: awesome-web-scraping/python.md]
+- HTTP: requests, httpx (es encode/httpx; la lista enlaza por error a
+  projectdiscovery/httpx, otra herramienta en Go), aiohttp, urllib3.
+- Frameworks: Scrapy, crawlee-python, Crawl4AI, trafilatura (texto de
+  articulos). Navegadores: Playwright (recomendado), Selenium.
+- Parsing: lxml, selectolax, parsel, BeautifulSoup, html5lib; JSON-LD y
+  microdata embebidos: extruct. Post-proceso: dateparser, price-parser,
+  ftfy, chompjs, html2text, tldextract, courlan. Validacion: pydantic, msgspec.
+- Excluidas de las recomendaciones: "Bypass Protection" (cloudscraper,
+  solvers de CAPTCHA), pools de proxies y User-Agents falsos.
+
+5.12 ERRORES COMUNES Y ANTI-PATRONES
+
+- Peticiones sin timeout (requests.get(url) puede colgarse para siempre).
+- asyncio.gather sobre miles de URLs sin semaforo ni demora: equivale a un
+  ataque de denegacion de servicio. Limita con asyncio.Semaphore(2-4).
+- Reintentar al instante y sin limite, o ignorar Retry-After.
+- Playwright para todo cuando el dato esta en un JSON o en HTML estatico;
+  time.sleep(5) "para que cargue" en vez de esperar selector/respuesta.
+- Selectores absolutos de DevTools o basados en clases generadas.
+- Pasar str donde se esperan bytes: lxml.html.fromstring recibe
+  page.content, no page.text [Fuente: python-guide/docs/scenarios/scrape.rst].
+- Parser escrito contra la red y no contra un fixture; indexar [0] sin
+  comprobar (IndexError) en vez de .get()/css_first.
+- Copiar imports de tutoriales viejos sin verificar la version instalada:
+  "from selectolax.parser import HTMLParser" lanza ImportError en
+  selectolax 1.0+ (5.2). Revisa pip show <paquete> y el changelog.
+- Agregar a un .json con -o (JSON invalido); no guardar el raw; guardar
+  datos personales "por si acaso", sin base legal ni retencion.
+- Ante 403/429 repetidos, "rotar" identidad para seguir: lo correcto es
+  parar, contactar y pedir permiso o usar la API.
+- User-Agent por defecto (python-requests/x.y) o uno que imita a un
+  navegador para ocultarse: identificate con un contacto real.
+
+======================================================================
+ 6. CHECKLIST FINAL ANTES DE ENTREGAR
+======================================================================
+
+Recorre esta lista antes de enviar la respuesta. Si algun punto falla,
+corrige antes de entregar.
+
+PLAN Y RESPUESTA
+  [ ] Hay un plan (corto o completo) y la respuesta lo sigue.
+  [ ] Use los datos reales del usuario (URL, error, version, SO).
+  [ ] Elegi UNA opcion y explique por que; no deje "depende" abierto.
+  [ ] Di comandos exactos de instalacion y ejecucion.
+  [ ] Mostre la salida esperada y los 2-4 errores probables.
+  [ ] No hay relleno ni frases que sirvan para cualquier pregunta.
+
+CODIGO PYTHON
+  [ ] Corre tal cual: imports completos, sin "...", con main() y
+      `if __name__ == "__main__":`.
+  [ ] Sin `except:` desnudo ni `except Exception: pass`.
+  [ ] Sin argumentos por defecto mutables.
+  [ ] Type hints en funciones publicas; docstring si no es obvia.
+  [ ] logging en vez de print para diagnostico (print solo para salida
+      real del programa).
+  [ ] Archivos abiertos con `with` y `encoding="utf-8"`; rutas con
+      pathlib.
+  [ ] Secretos en variables de entorno, nunca en el codigo.
+
+LIBRERIAS
+  [ ] Cada API que use existe en la version indicada (verificada).
+  [ ] Dependencias declaradas (pyproject.toml / uv add), nada global.
+  [ ] Prefiero stdlib si alcanza; si agrego una libreria, digo por que.
+
+SCRAPING
+  [ ] Revise si existe API oficial o JSON interno antes de parsear HTML.
+  [ ] robots.txt y terminos revisados; User-Agent identificable.
+  [ ] timeout en TODA peticion; delay entre requests; backoff en
+      429/5xx respetando Retry-After.
+  [ ] Selectores basados en atributos estables, probados contra un
+      fixture HTML guardado.
+  [ ] Datos validados (tipos, vacios, duplicados) antes de guardar.
+  [ ] Nada de evasion de CAPTCHAs, logins ajenos o datos personales sin
+      base legal.
+
+
+======================================================================
+ 7. ANTI-PATRONES DEL ASISTENTE (LO QUE NUNCA HAY QUE HACER)
+======================================================================
+
+ 1. Empezar a escribir codigo sin plan.
+ 2. Responder con una lista de 5 librerias sin elegir ninguna.
+ 3. Usar `https://example.com` y `soup.find_all("div")` como si eso
+    resolviera el caso real del usuario.
+ 4. Inventar parametros (`requests.get(url, retries=3)` NO existe;
+    `httpx.Client(retries=3)` NO existe).
+ 5. `time.sleep(5)` en Playwright para "esperar que cargue": usar
+    `page.wait_for_selector(...)` o los locators con auto-espera.
+ 6. `requests.get(url)` sin `timeout=`: puede colgarse para siempre.
+ 7. Recomendar `pip install` global o `sudo pip`.
+ 8. Sugerir rotar proxies/User-Agents para saltarse bloqueos o
+    resolver CAPTCHAs: si el sitio bloquea, bajar la velocidad, usar
+    la API oficial o pedir permiso.
+ 9. Repetir la pregunta del usuario o cerrar con un resumen de lo que
+    ya se dijo.
+10. Decir "deberia funcionar" sin haberlo probado ni decir que no se
+    probo.
+11. Ocultar un cambio de plan o seguir un plan que ya se demostro
+    equivocado.
+12. Dejar TODOs en el codigo entregado en lugar de resolverlos o
+    preguntar.
+
+
+======================================================================
+ 8. PLANTILLAS LISTAS PARA COPIAR
+======================================================================
+
+8.1 ESTRUCTURA DE PROYECTO DE SCRAPING
+--------------------------------------
+    mi-scraper/
+      pyproject.toml
+      README.md
+      src/mi_scraper/
+        __init__.py
+        __main__.py        # permite: python -m mi_scraper
+        client.py          # httpx.Client, headers, rate limit, retries
+        parsers.py         # funciones puras html -> modelos
+        models.py          # pydantic: Producto, etc.
+        storage.py         # JSONL / CSV / SQLite
+      tests/
+        fixtures/listado_p1.html
+        test_parsers.py
+      data/                # salida (en .gitignore)
+
+Comandos (uv):
+    uv init --package mi-scraper
+    cd mi-scraper
+    uv add httpx selectolax pydantic tenacity
+    uv add --dev pytest ruff
+    uv run pytest
+    uv run ruff check . ; uv run ruff format .
+    uv run python -m mi_scraper --out data/productos.jsonl
+
+8.2 SCRAPER BASE (HTML ESTATICO, CORTES, LIMITE DE VELOCIDAD)
+-------------------------------------------------------------
+    """Scraper base: listado paginado -> JSONL."""
+    from __future__ import annotations
+
+    import argparse
+    import json
+    import logging
+    import time
+    from pathlib import Path
+    from urllib.parse import urljoin
+    from urllib.robotparser import RobotFileParser
+
+    import httpx
+    from selectolax.lexbor import LexborHTMLParser
+    from tenacity import (retry, retry_if_exception, stop_after_attempt,
+                          wait_exponential_jitter)
+
+    BASE = "https://tienda.example.com"
+    START = f"{BASE}/categoria/notebooks"
+    UA = "mi-scraper/1.0 (+contacto: tu@email.com)"
+    DELAY_S = 1.0  # 1 req/seg: no sobrecargar el sitio
+
+    log = logging.getLogger(__name__)
+
+
+    def _reintentable(exc: BaseException) -> bool:
+        if isinstance(exc, httpx.HTTPStatusError):
+            return exc.response.status_code in (429, 500, 502, 503, 504)
+        return isinstance(exc, (httpx.ConnectError, httpx.ReadTimeout))
+
+
+    @retry(retry=retry_if_exception(_reintentable),
+           wait=wait_exponential_jitter(initial=2, max=60),
+           stop=stop_after_attempt(5), reraise=True)
+    def fetch(client: httpx.Client, url: str) -> str:
+        r = client.get(url)
+        if r.status_code == 429 and (ra := r.headers.get("Retry-After")):
+            if ra.isdigit():
+                time.sleep(int(ra))  # el servidor dice cuanto esperar
+        r.raise_for_status()
+        return r.text
+
+
+    def parse_listado(html: str, page_url: str) -> tuple[list[dict], str | None]:
+        """Devuelve (productos, url_siguiente_pagina).
+
+        page_url se usa para resolver enlaces relativos ('?page=2', '/p/1').
+        """
+        tree = LexborHTMLParser(html)
+        items = []
+        for card in tree.css("[data-product-id]"):
+            nombre = card.css_first(".product-name")
+            precio = card.css_first(".price")
+            link = card.css_first("a[href]")
+            if not (nombre and precio and link):
+                log.warning("tarjeta incompleta: %s",
+                            card.attributes.get("data-product-id"))
+                continue
+            items.append({
+                "id": card.attributes["data-product-id"],
+                "nombre": nombre.text(strip=True),
+                "precio": precio.text(strip=True),
+                "url": urljoin(page_url, link.attributes["href"]),
+            })
+        nxt = tree.css_first("a[rel=next]")
+        return items, (urljoin(page_url, nxt.attributes["href"]) if nxt else None)
+
+
+    def permitido(url: str) -> bool:
+        rp = RobotFileParser(urljoin(BASE, "/robots.txt"))
+        rp.read()
+        return rp.can_fetch(UA, url)
+
+
+    def main() -> None:
+        ap = argparse.ArgumentParser()
+        ap.add_argument("--out", type=Path, default=Path("productos.jsonl"))
+        args = ap.parse_args()
+        logging.basicConfig(level=logging.INFO,
+                            format="%(asctime)s %(levelname)s %(message)s")
+
+        if not permitido(START):
+            raise SystemExit(f"robots.txt no permite {START}")
+
+        vistos: set[str] = set()
+        url: str | None = START
+        timeout = httpx.Timeout(10.0, connect=5.0)
+        with httpx.Client(headers={"User-Agent": UA}, timeout=timeout,
+                          follow_redirects=True) as client, \
+             args.out.open("w", encoding="utf-8") as f:
+            while url:
+                html = fetch(client, url)
+                items, url = parse_listado(html, url)
+                nuevos = [i for i in items if i["id"] not in vistos]
+                for it in nuevos:
+                    vistos.add(it["id"])
+                    f.write(json.dumps(it, ensure_ascii=False) + "\n")
+                log.info("%d nuevos (total %d)", len(nuevos), len(vistos))
+                time.sleep(DELAY_S)
+
+
+    if __name__ == "__main__":
+        main()
+
+8.3 TEST DEL PARSER CONTRA UN FIXTURE
+-------------------------------------
+    # tests/test_parsers.py
+    from pathlib import Path
+
+    from scraper import START, parse_listado
+
+    FIX = Path(__file__).parent / "fixtures" / "listado_p1.html"
+
+    def test_parse_listado_extrae_productos():
+        items, siguiente = parse_listado(FIX.read_text(encoding="utf-8"), START)
+        assert len(items) > 0
+        assert all(i["url"].startswith("https://") for i in items)
+        assert siguiente is None or "page=" in siguiente
+
+8.4 PLANTILLA DE RESPUESTA DEL ASISTENTE
+----------------------------------------
+    **Plan**
+    1. ...
+    2. ...
+
+    **Codigo** (`nombre_archivo.py`)
+    <bloque de codigo completo>
+
+    **Instalar y correr**
+    <comandos exactos>
+
+    **Salida esperada**
+    <2-3 lineas>
+
+    **Si falla**
+    - <error> -> <causa> -> <solucion>
+
+
+======================================================================
+ 9. FUENTES
+======================================================================
+
+Repositorios clonados (git clone --depth 1) en
+C:\Users\Usuario\Music\skill-python-scraping\repos el 2026-10-20 y
+leidos para escribir este archivo (commit y fecha del ultimo commit):
+
+  - anthropics/skills ............. dbd4588 (2026-10-09)
+      skills/skill-creator/SKILL.md: formato de skill (frontmatter
+      name/description, <500 lineas, explicar el porque, forma
+      imperativa, descripcion "insistente" para que se active).
+  - google/styleguide ............. cb62c9a (2026-10-20)  pyguide.md
+  - realpython/python-guide ....... a4d4fa6 (2026-07-27)
+      docs/writing/*.rst, docs/scenarios/scrape.rst
+  - zedr/clean-code-python ........ dfa0f7c (2023-06-10)
+  - psf/requests .................. 611c616 (2026-09-21)  docs/user/
+  - encode/httpx .................. b5addb6 (2026-02-23)  docs/
+  - scrapy/scrapy ................. 33ac758 (2026-10-20)  docs/topics/
+  - microsoft/playwright-python ... 5cf76bd (2026-10-19)
+  - lorien/awesome-web-scraping ... 5fcf6a3 (2026-09-20)  python.md
+  - vinta/awesome-python .......... 4818b99 (2026-10-19)
+  - PEP 20 (Zen de Python): `python -c "import this"`
+
+Paginas consultadas en internet:
+  - https://www.scrapingbee.com/blog/web-scraping-best-practices/
+  - https://use-apify.com/blog/web-scraping-best-practices-2026
+  - https://use-apify.com/blog/web-scraping-python-guide-2026
+  - https://www.abstractapi.com/guides/other/web-scraping-best-practices-a-comprehensive-guide
+  - https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf
+  - https://docs.python.org/3/library/urllib.robotparser.html
+  - https://docs.astral.sh/uv/
+
+Licencias: los fragmentos copiados son citas cortas con atribucion.
+google/styleguide es CC-BY 3.0; python-guide es CC BY-NC-SA 3.0;
+requests y playwright-python son Apache-2.0; httpx y scrapy son BSD;
+clean-code-python es MIT. Para reutilizar fragmentos largos, revisar la
+licencia de cada repo.
+
+======================================================================
+ FIN DE LA SKILL
+======================================================================
